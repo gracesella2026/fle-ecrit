@@ -103,6 +103,7 @@ details.boite[open] summary::after{content:'–'}
 .cle .k2::before{background:var(--laiton)}
 .cle .k3::before{background:var(--vert)}
 .cle .k4::before{background:var(--prune)}
+.cle .k5::before{background:var(--rouge)}
 .cle .km::before{background:#F3DFA8;height:12px;width:18px}
 .exemple{font-family:var(--serif);font-size:1.05rem;line-height:2.05;margin:0}
 .exemple .g1,.exemple .g2,.exemple .g3,.exemple .g4{border-bottom:2px solid;padding-bottom:2px}
@@ -110,11 +111,20 @@ details.boite[open] summary::after{content:'–'}
 .exemple .g2{border-color:var(--laiton)}
 .exemple .g3{border-color:var(--vert)}
 .exemple .g4{border-color:var(--prune)}
+.exemple .g5{border-color:var(--rouge)}
 .exemple mark{background:#F3DFA8;color:var(--encre);font-weight:600;padding:0 2px}
 .pied-ex{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;font-size:.82rem;color:var(--s2)}
 .pied-ex .n{font-family:var(--mono)}
 
 .bascule{display:flex;border:1px solid var(--voile);background:var(--blanc);margin-bottom:14px}
+.famille{margin-bottom:12px}
+.famille .bascule{margin-bottom:0}
+.fam-tete{display:block;font-size:.74rem;color:var(--s3);text-transform:uppercase;letter-spacing:.07em;margin:0 0 5px}
+.photo2{margin:16px 0 4px;background:var(--blanc);border:1px solid var(--voile);padding:11px}
+.photo2 img{display:block;width:100%;max-width:240px;height:auto;background:var(--s5)}
+.photo2 .leg2{font-family:var(--serif);font-style:italic;font-size:.86rem;color:var(--s2);margin-top:8px}
+.piste.trop{background:#F7E9E7}
+textarea.court{min-height:165px}
 .bascule button{flex:1;background:transparent;border:none;padding:10px;color:var(--s2)}
 .bascule button[aria-pressed="true"]{background:var(--s2);color:var(--blanc)}
 .sujet{background:var(--blanc);border:1px solid var(--voile);border-left:3px solid var(--laiton);padding:18px 20px}
@@ -191,7 +201,8 @@ textarea:focus{border-color:var(--s3)}
       <details class="reglages">
         <summary>Réglages</summary>
         <label>Minimum de mots — photo <input type="number" id="min1" value="80" min="20" max="300" step="5"></label>
-        <label>Minimum de mots — question <input type="number" id="min2" value="80" min="20" max="300" step="5"></label>
+        <label>Maximum de mots — cinq lignes <input type="number" id="max2" value="70" min="30" max="150" step="5"></label>
+        <label>Minimum de mots — format long <input type="number" id="min2" value="80" min="20" max="300" step="5"></label>
         <label>Durée du chronomètre (min) <input type="number" id="duree" value="25" min="5" max="120" step="5"></label>
       </details>
     </div>
@@ -262,11 +273,22 @@ textarea:focus{border-color:var(--s3)}
     <div class="grille">
       <section>
         <h2 class="titre-bloc">Le sujet</h2>
-        <p class="sous">Deux types de questions tombent à l'écrit. Entraîne-toi aux deux.</p>
-        <div class="bascule">
-          <button id="btnReflexion" aria-pressed="true">Réflexion</button>
-          <button id="btnCreativite" aria-pressed="false">Créativité</button>
+        <p class="sous">Le format court est celui des nouvelles consignes : cinq lignes, à partir de la photo. Le format long reste disponible pour s'entraîner.</p>
+        <div class="famille">
+          <span class="fam-tete">Cinq lignes, d'après la photo</span>
+          <div class="bascule">
+            <button id="btnApres" aria-pressed="true">1. La scène d'après</button>
+            <button id="btnSecret" aria-pressed="false">2. Le secret</button>
+          </div>
         </div>
+        <div class="famille">
+          <span class="fam-tete">Format long, 80 mots</span>
+          <div class="bascule">
+            <button id="btnReflexion" aria-pressed="false">Réflexion</button>
+            <button id="btnCreativite" aria-pressed="false">Créativité</button>
+          </div>
+        </div>
+        <div class="photo2" id="photo2" hidden></div>
         <div class="sujet">
           <p id="questionTexte"></p>
           <div class="barre">
@@ -274,6 +296,7 @@ textarea:focus{border-color:var(--s3)}
             <button class="btn-fin" id="autreQuestion">Autre sujet</button>
           </div>
         </div>
+        <p class="mini" id="noteSujet" style="margin:9px 0 0"></p>
         <input class="champ-mots" id="champQuestion" aria-label="Écrire une autre question"
                placeholder="Ou copie ici la question de ton sujet d'examen">
 
@@ -293,7 +316,7 @@ textarea:focus{border-color:var(--s3)}
 
       <section>
         <h2 class="titre-bloc">Ta réponse</h2>
-        <p class="sous">Réponds vraiment à la question posée, du début à la fin.</p>
+        <p class="sous" id="sousReponse">Réponds vraiment à la question posée, du début à la fin.</p>
         <textarea id="texte2" placeholder="Écris ici…" spellcheck="true"></textarea>
         <div class="jauge">
           <div class="jauge-tete"><span class="compte" id="compte2">0 mot</span><span class="verdict" id="verdict2"></span></div>
@@ -325,6 +348,9 @@ textarea:focus{border-color:var(--s3)}
       <div class="corps">
         <h4>Le principe</h4>
         <p>L'épreuve écrite comporte deux travaux distincts, et l'application les sépare en deux onglets. La description de photo doit contenir quatre éléments : le lieu, le temps qu'il fait, les personnages, les actions. Cinq mots imposés doivent y figurer ; ils passent au vert dès que tu les emploies. Le second travail bascule entre une question de réflexion et une consigne de créativité, chacune avec son plan en quatre mouvements et ses temps verbaux.</p>
+
+        <h4>Les deux formats du second travail</h4>
+        <p>Le format court applique les nouvelles consignes : deux sujets au choix, tous les deux tirés de la photo, cinq lignes maximum, avec au moins un temps du passé et un temps du futur. Le format long — réflexion argumentée ou récit développé — reste accessible dans la même page, utile en début d'année et pour les devoirs de classe.</p>
 
         <h4>Les exemples</h4>
         <p>Chaque photo et chaque sujet ont un exemple rédigé. Les phrases y sont soulignées dans la couleur de l'élément auquel elles répondent, et les mots imposés apparaissent en surbrillance. Écris d'abord ton texte, puis compare : c'est là que tu verras ce qui manque chez toi.</p>
@@ -1141,15 +1167,917 @@ const RELECTURE = [
  {t:'La ponctuation',e:'Majuscule après chaque point, et un point à la fin du texte.'}
 ];
 
+/* ============ 2 bis. LE FORMAT COURT (nouvelles consignes) ============ */
+const SUJETS_COURTS = {
+ apres:`Observez cette image et imaginez la scène qui se déroule juste après : que disent les personnages, et quel événement inattendu va soudain changer leur situation ? Rédigez un court récit de cinq lignes maximum, en utilisant au moins un temps du passé et un temps du futur pour décrire l'évolution de l'action. Soyez le plus original possible dans le choix de cet événement imprévu.`,
+ secret:`Imaginez le secret que cache l'un des personnages de cette image : quel est ce mystère, et quelle conséquence surprenante aurait-il sur la scène ? Rédigez cinq lignes originales qui révèlent cette vérité cachée de manière totalement inattendue, en utilisant au moins un temps du passé et un temps du futur pour décrire l'évolution de l'action.`
+};
+const NOM_Q = { apres:`Scène d'après`, secret:`Le secret`, reflexion:`Réflexion`, creativite:`Créativité` };
+const RELECTURE_COURT = [
+ {t:'L\'effet de surprise',e:'Ton événement, ou ton secret, est-il vraiment imprévisible ? Si on le devine dès la deuxième ligne, cherche autre chose.'},
+ {t:'Le basculement des temps',e:'Le passé raconte ce qui s\'est passé, le futur dit ce qui va changer. Les deux doivent se voir dans ton texte.'}
+];
+
+/* ---- repérage des temps : marques les plus fréquentes, jamais une note ---- */
+function motsDe(t){ return (t.toLowerCase().replace(/['’]/g,' ').match(/[a-zà-öø-ÿ\-]+/g) || []); }
+const NON_IMP = new Set(['jamais','desormais','désormais','francais','français','anglais','portrait','extrait','parfait','souhait','attrait','retrait','satisfait','abstrait','forfait','biais','delais','délais','essais','balais','palais','relais','marais','engrais','vrais','frais','quais','trait','lait','fait','plait','plaît','minerais','genais']);
+const NON_FUT = new Set(['vrai','vrais','vraie','vraies','bras','opera','opéra','camera','caméra','extra','ultra','front','fronts','affront','para','cobra','ras','environs','marrons','citrons','poltrons']);
+const NON_PART = new Set(['aussi','ici','ainsi','parmi','demi','midi','lundi','mardi','mercredi','jeudi','vendredi','samedi','merci','lui','celui','oui','depuis','puis','mais','jamais','fois','trois','mois','anglais','francais','français','palais','relais','jus','bus','autobus','dessus','virus','rue','rues','statue','tortue','avenue','banlieue','queue','nuit','huit','minuit','gratuit','bruit','lit','petit','esprit','habit','endroit','droit','toit','soit','tapis','avis','pays','fils','tandis','ni','si','pri','plus','moins','pas','rien','tout','tous','vie','envie','partie','sortie','maladie','joie','soie','pluie','magie','vue']);
+const AUX_PC = /^(ai|as|a|avons|avez|ont|suis|es|est|sommes|êtes|etes|sont)$/;
+const FIN_PART = /(é|ée|és|ées|i|ie|ies|is|it|u|ue|ues|us|ert|erte|int|inte|eint|aint|oint)$/;
+const LIAISON = new Set(['ne','n','pas','plus','jamais','rien','tout','bien','déjà','deja','enfin','soudain','alors','vite','me','te','se','s','nous','vous','lui','y','en','l','le','la','les','même','meme','encore','aussitôt','aussitot','peut','toujours']);
+
+function marquesPasse(t){
+  const m = motsDe(t), out = [];
+  const push = x => { if(out.indexOf(x) < 0) out.push(x); };
+  for(let i = 0; i < m.length; i++){
+    const w = m[i];
+    if(w.length >= 5 && /(ais|ait|aient|iez)$/.test(w) && !NON_IMP.has(w)) push(w);
+    if(/(èrent|irent|urent)$/.test(w) || /^(fut|furent|eut|eurent|vint|vinrent)$/.test(w)) push(w);
+    if(AUX_PC.test(w)){
+      for(let k = 1; k <= 2 && i + k < m.length; k++){
+        const v = m[i+k];
+        if(LIAISON.has(v)) continue;
+        if(v.length >= 3 && FIN_PART.test(v) && !NON_PART.has(v)) push(w + ' ' + v);
+        break;
+      }
+    }
+  }
+  if(/\bnous\s+[a-zà-öø-ÿ'’\-]{1,}ions(?![a-zà-öø-ÿ])/i.test(t)) push('nous …ions');
+  if(/\b(avait|avaient|était|étaient|etait|etaient)\s+[a-zà-öø-ÿ'’\-]{3,}(é|ée|és|ées|i|is|it|u|ue|us)(?![a-zà-öø-ÿ])/i.test(t)) push('plus-que-parfait');
+  return out;
+}
+function marquesFutur(t){
+  const m = motsDe(t), out = [];
+  const push = x => { if(out.indexOf(x) < 0) out.push(x); };
+  for(let i = 0; i < m.length; i++){
+    const w = m[i];
+    if(w.length >= 3 && /(rai|ras|ra|rons|rez|ront)$/.test(w) && !NON_FUT.has(w) && !/(rait|raient|rais)$/.test(w)) push(w);
+  }
+  const fp = t.toLowerCase().match(/\b(vais|vas|va|allons|allez|vont)\s+(?:[a-zà-öø-ÿ'’]+\s+)?[a-zà-öø-ÿ'’\-]{2,}(?:er|ir|re|oir|oire)\b/g);
+  if(fp) fp.slice(0,2).forEach(x=>push(x.replace(/\s+/g,' ')));
+  return out;
+}
+function paroles(t){
+  return /[«»"“”]/.test(t) ||
+    /\b(a|ont|as|ai)\s+(dit|répondu|repondu|crié|crie|criée|demandé|demande|murmuré|murmure|ajouté|ajoute|avoué|avoue|lancé|lance|soufflé|souffle|hurlé|hurle|chuchoté|chuchote)(?![a-zà-öø-ÿ])/i.test(t) ||
+    /\bs['’]est\s+(écrié|ecrie|écriée|exclamé|exclame)(?![a-zà-öø-ÿ])/i.test(t);
+}
+
+/* ---- plans en cinq lignes : une ligne par étape ---- */
+const PLAN_COURT = {
+ apres:{
+  sous:`Cinq lignes, une idée par ligne : la situation, les paroles, l'imprévu, la réaction, la suite.`,
+  etapes:[
+   {n:1,titre:'La situation, juste après la photo',temps:'imparfait',
+    verif:'As-tu posé la scène à l\'imparfait, en une seule phrase ?',
+    amorces:[`Quelques secondes plus tard,`,`Il était`,`Tout semblait normal :`,`Personne ne bougeait encore,`,`Rien n'avait changé, sauf`]},
+   {n:2,titre:'Ce que disent les personnages',temps:'passé composé, discours direct',
+    verif:'As-tu fait parler au moins un personnage, entre guillemets ?',
+    amorces:[`« `,` », lui a dit`,`Elle lui a répondu : « `,`« Tu es sûr ? » a demandé`,`Personne n'a osé répondre.`]},
+   {n:3,titre:'L\'événement inattendu',temps:'passé composé',
+    verif:'L\'événement arrive-t-il vraiment par surprise, et est-il original ?',
+    amorces:[`C'est alors que`,`Soudain,`,`Sans prévenir,`,`Au même moment,`,`En une seconde,`]},
+   {n:4,titre:'La réaction',temps:'passé composé, imparfait',
+    verif:'A-t-on vu ce que les personnages ont fait ou ressenti juste après ?',
+    amorces:[`Le silence est tombé.`,`Son visage a changé.`,`Nous sommes restés`,`Aucun d'eux n'a compris`,`Elle n'a pas eu le temps de`]},
+   {n:5,titre:'Ce qui va changer',temps:'futur',
+    verif:'Ta dernière ligne annonce-t-elle la suite, au futur ?',
+    amorces:[`Demain,`,`À partir de ce jour,`,`Plus rien ne sera comme avant.`,`Ils ne sauront jamais que`,`Il faudra`]}],
+  vocab:[
+   {t:'Marquer la rupture',m:[`soudain`,`tout à coup`,`sans prévenir`,`c'est alors que`,`au même moment`,`brusquement`,`en une seconde`]},
+   {t:'Faire parler',m:[`« … », a dit`,`a répondu`,`a demandé`,`a murmuré`,`s'est écrié`,`a avoué`,`a lancé`]},
+   {t:'Le passé du récit',m:[`il était`,`il y avait`,`elle portait`,`nous attendions`,`j'ai vu`,`elle s'est arrêtée`,`personne n'avait remarqué`]},
+   {t:'Le futur de la fin',m:[`demain`,`désormais`,`il faudra`,`ils comprendront`,`plus rien ne sera`,`elle n'oubliera jamais`]}]
+ },
+ secret:{
+  sous:`Cinq lignes, une idée par ligne : l'apparence, le détail qui cloche, le secret, l'effet sur la scène, la suite.`,
+  etapes:[
+   {n:1,titre:'Ce que la photo montre',temps:'imparfait',
+    verif:'As-tu décrit en une phrase ce qu\'on croit voir, à l\'imparfait ?',
+    amorces:[`Ce jour-là, tout paraissait normal :`,`Sur la photo, elle souriait,`,`Ils avaient l'air`,`On aurait dit`]},
+   {n:2,titre:'Le détail qui ne colle pas',temps:'imparfait',
+    verif:'As-tu glissé un indice, un petit détail étrange ?',
+    amorces:[`Pourtant,`,`Un détail ne collait pas :`,`Personne n'avait remarqué que`,`Ses mains tremblaient un peu,`]},
+   {n:3,titre:'Le secret',temps:'plus-que-parfait, passé composé',
+    verif:'La révélation est-elle vraiment inattendue, et non devinable ?',
+    amorces:[`En réalité,`,`Depuis des mois, elle avait`,`Ce que personne ne savait, c'est que`,`Il n'avait jamais dit que`]},
+   {n:4,titre:'La conséquence sur la scène',temps:'passé composé',
+    verif:'A-t-on vu ce que la vérité a changé, sur la photo elle-même ?',
+    amorces:[`Quand la vérité est sortie,`,`À cet instant,`,`Tout s'est éclairé :`,`Les autres se sont tus.`]},
+   {n:5,titre:'Ce que cela changera',temps:'futur',
+    verif:'Ta dernière ligne dit-elle la suite, au futur ?',
+    amorces:[`Désormais,`,`Plus tard, ils comprendront que`,`Elle ne pourra plus`,`L'année prochaine,`,`Rien ne sera plus pareil.`]}],
+  vocab:[
+   {t:'Le secret',m:[`en réalité`,`ce que personne ne savait`,`faire semblant de`,`cacher`,`avouer`,`depuis des mois`,`au fond`]},
+   {t:'L\'indice',m:[`pourtant`,`un détail`,`étrange`,`mal à l'aise`,`éviter le regard`,`hésiter`,`sans raison`]},
+   {t:'Le passé du récit',m:[`elle avait caché`,`il n'avait jamais dit`,`on croyait que`,`tout semblait`,`la vérité est sortie`]},
+   {t:'Le futur de la fin',m:[`désormais`,`plus tard`,`ils comprendront`,`elle devra`,`rien ne sera plus pareil`,`l'année prochaine`]}]
+ }
+};
+
+/* ---- exemples rédigés, cinq lignes, une couleur par ligne ---- */
+const EX_COURTS = {
+ '01_1':{
+  apres:[
+   {c:1,t:`Il était huit heures moins cinq et Yoni n'osait toujours pas entrer.`},
+   {c:2,t:`« Tu viens ? On va être en retard », lui a lancé une fille qu'il ne connaissait pas.`},
+   {c:3,t:`C'est alors que le nom du lycée a disparu de la façade, lettre après lettre.`},
+   {c:4,t:`Personne autour de lui n'a semblé le remarquer.`},
+   {c:5,t:`Yoni l'a compris : demain, il sera le seul à se souvenir de cette école.`}],
+  secret:[
+   {c:1,t:`Depuis la rentrée, Yoni gardait son sac sur le dos, même pendant les cours.`},
+   {c:2,t:`Les autres pensaient qu'il transportait ses livres, comme tout le monde.`},
+   {c:3,t:`En réalité, il y cachait un chat trouvé la veille sous le portail.`},
+   {c:4,t:`Le jour où le sac a miaulé en pleine interrogation, toute la classe a ri.`},
+   {c:5,t:`À partir de demain, la bête aura un nom et dormira chez le professeur de français.`}]},
+ '01_2':{
+  apres:[
+   {c:1,t:`Léa regardait la rue depuis dix minutes sans bouger d'un centimètre.`},
+   {c:2,t:`« Tu descends ? Le bus est là », a crié sa mère depuis l'entrée.`},
+   {c:3,t:`Au même moment, la rue s'est vidée : plus un bus, plus une voiture, plus un bruit.`},
+   {c:4,t:`Léa a compris qu'elle était la seule à regarder par la fenêtre ce matin-là.`},
+   {c:5,t:`Dans une heure, elle sortira quand même, et elle marchera jusqu'au lycée.`}],
+  secret:[
+   {c:1,t:`Ce matin-là, Léa regardait la rue comme à chaque rentrée.`},
+   {c:2,t:`Pourtant, son sac était vide et ses cahiers étaient restés neufs.`},
+   {c:3,t:`En réalité, elle avait quitté le lycée en juin et n'avait jamais osé le dire chez elle.`},
+   {c:4,t:`Quand sa mère a ouvert la porte, la vérité est tombée d'un coup.`},
+   {c:5,t:`Ce soir, elles parleront enfin, et lundi Léa ira s'inscrire ailleurs.`}]},
+ '01_3':{
+  apres:[
+   {c:1,t:`Deux randonneurs étaient arrêtés devant le panneau depuis un quart d'heure.`},
+   {c:2,t:`« On prend Avenir, c'est le plus court », a dit le plus jeune, la carte à la main.`},
+   {c:3,t:`Sans prévenir, les trois flèches ont tourné et ont indiqué la même direction.`},
+   {c:4,t:`Les deux amis se sont regardés, puis ont posé leurs sacs dans l'herbe.`},
+   {c:5,t:`Ils ne le savent pas encore, mais ils dormiront ici et repartiront demain.`}],
+  secret:[
+   {c:1,t:`Ce panneau était planté au milieu des champs depuis trente ans.`},
+   {c:2,t:`Les promeneurs croyaient qu'il indiquait trois chemins différents.`},
+   {c:3,t:`En réalité, un vieil homme le repeignait chaque printemps : il avait écrit ces trois mots le jour de son mariage.`},
+   {c:4,t:`Cette année, il n'est pas venu, et la peinture a commencé à s'écailler.`},
+   {c:5,t:`Au prochain hiver, le bois tombera, et plus personne ne saura pourquoi il était là.`}]},
+ '02_1':{
+  apres:[
+   {c:1,t:`Le pouce s'approchait de l'écran, à seize heures vingt-trois, un mercredi.`},
+   {c:2,t:`« Papa, tu réponds ou tu regardes ? » a demandé une voix, hors du cadre.`},
+   {c:3,t:`C'est alors que les vingt applications se sont éteintes, une par une, sans raison.`},
+   {c:4,t:`L'homme a posé le téléphone, les mains vides pour la première fois de la journée.`},
+   {c:5,t:`Ce soir-là, il jouera aux cartes avec sa fille et il ne rallumera rien.`}],
+  secret:[
+   {c:1,t:`Sur cette photo, on ne voit qu'une main et un écran allumé à seize heures.`},
+   {c:2,t:`C'est celle de mon père, qui répétait à table qu'il détestait les téléphones.`},
+   {c:3,t:`En réalité, il écrivait depuis dix ans un journal secret dans ce téléphone.`},
+   {c:4,t:`Le jour où il a oublié l'appareil dans le train, il n'a plus dit un mot.`},
+   {c:5,t:`S'il le retrouve, nous saurons enfin ce qu'il pense vraiment de nous.`}]},
+ '02_2':{
+  apres:[
+   {c:1,t:`Il était deux heures du matin et Maya faisait défiler les mêmes images.`},
+   {c:2,t:`« Éteins, tu as cours demain », a murmuré sa sœur depuis l'autre lit.`},
+   {c:3,t:`C'est alors que le fil s'est mis à montrer sa journée du lendemain, heure par heure.`},
+   {c:4,t:`Maya s'est redressée, le cœur battant, et a regardé la vidéo jusqu'au bout.`},
+   {c:5,t:`Demain, elle saura tout ce qui l'attend, et elle ne pourra rien changer.`}],
+  secret:[
+   {c:1,t:`Maya faisait défiler son téléphone toutes les nuits, jusqu'à deux heures.`},
+   {c:2,t:`Sa famille croyait qu'elle regardait des vidéos et qu'elle perdait son temps.`},
+   {c:3,t:`En réalité, elle traduisait en français les lettres de son arrière-grand-mère, photo après photo.`},
+   {c:4,t:`Quand sa mère a lu le fichier, elle est restée assise sans rien dire.`},
+   {c:5,t:`Le mois prochain, toute la famille recevra le livre imprimé.`}]},
+ '02_3':{
+  apres:[
+   {c:1,t:`Sur l'écran du laboratoire, le cerveau bleu clignotait depuis le matin.`},
+   {c:2,t:`« Il a trop d'icônes, il va saturer », a prévenu la chercheuse, inquiète.`},
+   {c:3,t:`Soudain, les vingt applications sont rentrées dans la tête et une seule est restée : dormir.`},
+   {c:4,t:`Personne, dans la salle, n'a osé toucher le clavier.`},
+   {c:5,t:`Demain, l'équipe présentera ce résultat, et personne ne la croira.`}],
+  secret:[
+   {c:1,t:`Cette image servait d'affiche dans tous les couloirs du lycée.`},
+   {c:2,t:`On croyait que le dessin venait d'une grande agence de publicité.`},
+   {c:3,t:`En réalité, un élève de terminale l'avait fait à trois heures du matin, pendant ses révisions.`},
+   {c:4,t:`Il ne l'a jamais dit : sa signature était cachée dans le vingtième carré, tout en bas.`},
+   {c:5,t:`Quand quelqu'un la trouvera, il devra bien avouer.`}]},
+ '03_1':{
+  apres:[
+   {c:1,t:`Il restait dix minutes de cours et Ilan jouait encore, la casquette baissée.`},
+   {c:2,t:`« Ilan, tu peux nous lire ta réponse ? » a demandé le professeur, sans se retourner.`},
+   {c:3,t:`Le garçon a lu à voix haute, et sa réponse était juste : le jeu la lui avait donnée.`},
+   {c:4,t:`Toute la classe s'est tournée vers sa tablette.`},
+   {c:5,t:`À partir de lundi, le professeur jouera avec eux pendant le dernier quart d'heure.`}],
+  secret:[
+   {c:1,t:`Ilan gardait sa casquette baissée et sa tablette allumée à chaque cours.`},
+   {c:2,t:`Les professeurs pensaient qu'il jouait, et ils avaient presque raison.`},
+   {c:3,t:`En réalité, il programmait lui-même ce jeu : chaque niveau contenait une leçon de français.`},
+   {c:4,t:`Le jour où sa voisine a gagné la partie, elle a compris qu'elle venait de réviser.`},
+   {c:5,t:`L'an prochain, la moitié de la classe jouera avant les contrôles.`}]},
+ '03_2':{
+  apres:[
+   {c:1,t:`Le panneau attendait dans le couloir depuis le début de la réunion.`},
+   {c:2,t:`« On vote, et on l'accroche ce soir », a dit la directrice aux professeurs.`},
+   {c:3,t:`Au même moment, le dessin du téléphone a disparu du panneau, sans laisser de trace.`},
+   {c:4,t:`Les vingt adultes se sont approchés, puis se sont tus.`},
+   {c:5,t:`Lundi, ils écriront eux-mêmes la règle, et les élèves la liront les premiers.`}],
+  secret:[
+   {c:1,t:`Ce panneau posait la même question depuis trois ans, dans le hall du lycée.`},
+   {c:2,t:`Tout le monde croyait qu'il venait du ministère.`},
+   {c:3,t:`En réalité, deux élèves l'avaient fabriqué et accroché un dimanche, pour rire.`},
+   {c:4,t:`Personne n'avait osé le décrocher, et il était devenu la règle de l'école.`},
+   {c:5,t:`À la fin de l'année, ils diront la vérité, et le panneau restera.`}]},
+ '03_3':{
+  apres:[
+   {c:1,t:`Adam écrivait avec son stylet depuis le début de l'heure, sans lever les yeux.`},
+   {c:2,t:`« Arrête, le cours est fini », lui a soufflé son voisin en rangeant ses affaires.`},
+   {c:3,t:`Mais la tablette continuait toute seule, ligne après ligne, sans que sa main bouge.`},
+   {c:4,t:`Adam a posé le stylet et a regardé l'écran écrire à sa place.`},
+   {c:5,t:`Ce soir, il relira ce texte, et il saura enfin qui le lui a envoyé.`}],
+  secret:[
+   {c:1,t:`Sur la photo, Adam écrivait sur sa tablette, plus concentré que toute la classe.`},
+   {c:2,t:`Pourtant, son stylet ne s'arrêtait jamais, même quand le professeur parlait.`},
+   {c:3,t:`En réalité, il ne prenait pas de notes : il nous dessinait, page après page, depuis trois ans.`},
+   {c:4,t:`Le jour où sa tablette est tombée, deux cents portraits sont apparus sur l'écran du tableau.`},
+   {c:5,t:`L'année prochaine, ses dessins ouvriront l'exposition du lycée.`}]},
+ '04_1':{
+  apres:[
+   {c:1,t:`Elle était allongée depuis une heure et n'avait pas ouvert les yeux une seule fois.`},
+   {c:2,t:`« Tu dors ? » a demandé son frère, debout au-dessus d'elle.`},
+   {c:3,t:`« Non, a-t-elle répondu, j'écoute pousser l'herbe. » Et l'herbe, ce jour-là, a répondu.`},
+   {c:4,t:`Ils sont restés immobiles tous les deux, sans oser respirer.`},
+   {c:5,t:`Personne ne les croira, mais ils reviendront ici chaque été.`}],
+  secret:[
+   {c:1,t:`Camille venait s'allonger dans ce pré tous les jeudis, sans jamais dire pourquoi.`},
+   {c:2,t:`Sa famille croyait qu'elle avait simplement besoin de calme.`},
+   {c:3,t:`En réalité, elle enterrait sous l'herbe une lettre par semaine, adressée à elle-même.`},
+   {c:4,t:`Elle en avait caché quarante, et sa boucle d'oreille dorée marquait l'endroit exact.`},
+   {c:5,t:`À vingt-cinq ans, elle reviendra les déterrer toutes en une seule nuit.`}]},
+ '04_2':{
+  apres:[
+   {c:1,t:`Le café refroidissait depuis vingt minutes et la page restait blanche.`},
+   {c:2,t:`« Tu écris quelque chose ou tu regardes le mur ? » a demandé Antoine en s'asseyant.`},
+   {c:3,t:`Au même moment, trois mots sont apparus sur le carnet, écrits par personne.`},
+   {c:4,t:`Julien a reculé sa chaise et n'a plus touché au stylo.`},
+   {c:5,t:`Demain matin, il reviendra à la même table, et il apportera un deuxième carnet.`}],
+  secret:[
+   {c:1,t:`Ce carnet restait ouvert sur la table du café, toujours à la même page.`},
+   {c:2,t:`Les clients pensaient qu'il appartenait au patron, qui ne le rangeait jamais.`},
+   {c:3,t:`En réalité, chacun y écrivait une phrase en partant, depuis l'ouverture du café.`},
+   {c:4,t:`Personne n'avait jamais lu les pages précédentes : elles étaient collées entre elles.`},
+   {c:5,t:`L'été prochain, le patron les décollera devant tout le quartier.`}]},
+ '04_3':{
+  apres:[
+   {c:1,t:`L'homme était assis sur ce banc depuis le lever du jour, sans bouger.`},
+   {c:2,t:`« Monsieur, le dernier bus part dans dix minutes », lui a dit une promeneuse.`},
+   {c:3,t:`C'est alors que le lac s'est mis à refléter un autre paysage que le sien.`},
+   {c:4,t:`Il s'est levé lentement et a marché jusqu'au bord de l'eau.`},
+   {c:5,t:`Ce soir, il ne prendra aucun bus, et il dormira sur ce banc.`}],
+  secret:[
+   {c:1,t:`Cet homme venait s'asseoir sur le même banc chaque dimanche, à la même heure.`},
+   {c:2,t:`Il ne regardait pas le lac, mais la maison, de l'autre côté.`},
+   {c:3,t:`En réalité, il l'avait construite de ses mains, puis vendue pour payer les études de sa fille.`},
+   {c:4,t:`Personne, dans le village, n'avait jamais fait le rapprochement.`},
+   {c:5,t:`Dimanche prochain, sa fille viendra s'asseoir près de lui, et il lui dira tout.`}]},
+ '05_1':{
+  apres:[
+   {c:1,t:`La grand-mère avait sorti la boîte de photos pour la première fois depuis vingt ans.`},
+   {c:2,t:`« Et cette femme, là, c'est qui ? » a demandé la petite, le doigt sur une inconnue.`},
+   {c:3,t:`La vieille dame s'est tue : sur cette image de 1954, la femme portait le pull violet de sa petite-fille.`},
+   {c:4,t:`Aucune des deux n'a osé toucher la photo.`},
+   {c:5,t:`Ce soir, elles chercheront ensemble, et elles ne dormiront pas.`}],
+  secret:[
+   {c:1,t:`La grand-mère racontait chaque photo à Chloé, lentement, avec des détails précis.`},
+   {c:2,t:`La petite croyait qu'elle avait vécu toutes ces scènes.`},
+   {c:3,t:`En réalité, elle n'apparaissait sur aucune image : elle avait acheté la boîte à un marché, en 1970.`},
+   {c:4,t:`Depuis, elle inventait une famille entière, à raison d'une photo par dimanche.`},
+   {c:5,t:`Un jour, Chloé ouvrira le tiroir du bas et comprendra tout.`}]},
+ '05_2':{
+  apres:[
+   {c:1,t:`Les vingt silhouettes avançaient vers l'appareil depuis le début de la rue.`},
+   {c:2,t:`« Ne bougez plus ! » a crié le photographe, la tête sous son drap noir.`},
+   {c:3,t:`Sans prévenir, une seule silhouette a levé la tête et l'a regardé, lui, en face.`},
+   {c:4,t:`L'homme a lâché son appareil, qui s'est ouvert sur les pavés.`},
+   {c:5,t:`Cette plaque restera cachée cent ans, et personne ne saura qui l'a regardé.`}],
+  secret:[
+   {c:1,t:`Sur cette photo ancienne, une vingtaine de personnes marchaient au milieu de la rue.`},
+   {c:2,t:`On croyait qu'elles rentraient du travail, un soir ordinaire.`},
+   {c:3,t:`En réalité, aucune d'elles ne se connaissait : elles suivaient toutes le même chien perdu.`},
+   {c:4,t:`L'image est restée soixante ans dans un tiroir, sans aucune explication.`},
+   {c:5,t:`Bientôt, un historien racontera cette histoire, et personne ne voudra le croire.`}]},
+ '05_3':{
+  apres:[
+   {c:1,t:`Yoav était resté devant la stèle pendant que la classe repartait vers le bus.`},
+   {c:2,t:`« On t'attend ! » a crié son professeur, du bout de l'allée.`},
+   {c:3,t:`À cet instant, un nom est apparu sur la pierre, là où il n'y avait rien.`},
+   {c:4,t:`Yoav a relu trois fois : c'était celui de son arrière-grand-père.`},
+   {c:5,t:`Il ne dira rien dans le bus, mais il reviendra demain avec sa mère.`}],
+  secret:[
+   {c:1,t:`Chaque année, la classe s'arrêtait devant la stèle, et Yoav restait le dernier.`},
+   {c:2,t:`Ses camarades croyaient qu'il lisait les noms gravés, comme tout le monde.`},
+   {c:3,t:`En réalité, il cherchait le sien : sa famille portait le nom du dernier de la liste.`},
+   {c:4,t:`Cette année-là, il a posé la main sur la pierre et l'a dit à voix haute.`},
+   {c:5,t:`L'an prochain, c'est lui qui lira les noms devant les nouveaux élèves.`}]},
+ '06_1':{
+  apres:[
+   {c:1,t:`Émilie était assise sur le rocher depuis une heure, les jambes repliées.`},
+   {c:2,t:`« Tu redescends avec nous ? » a demandé une voix derrière elle, essoufflée.`},
+   {c:3,t:`Mais le soleil, ce matin-là, s'est arrêté à mi-hauteur et n'est plus monté.`},
+   {c:4,t:`Toute la vallée est restée dans cette lumière orange, sans avancer d'une minute.`},
+   {c:5,t:`Personne ne redescendra tant qu'elle n'aura pas décidé de se lever.`}],
+  secret:[
+   {c:1,t:`Émilie montait sur ce sommet le premier dimanche de chaque mois.`},
+   {c:2,t:`Ses amis croyaient qu'elle aimait simplement marcher très tôt.`},
+   {c:3,t:`En réalité, elle avait promis à sa sœur, partie vivre à l'étranger, de lui décrire chaque lever de soleil.`},
+   {c:4,t:`Elle en avait déjà envoyé quarante-deux, sans recevoir une seule réponse.`},
+   {c:5,t:`Le mois prochain, sa sœur l'attendra en haut, et elles regarderont ensemble.`}]},
+ '06_2':{
+  apres:[
+   {c:1,t:`Les quatre garçons regardaient l'horizon, bras dessus bras dessous, depuis dix minutes.`},
+   {c:2,t:`« On se revoit dans dix ans, ici, à la même heure », a proposé Lucas.`},
+   {c:3,t:`Au même instant, une photo est tombée du ciel : eux quatre, vieillis, au même endroit.`},
+   {c:4,t:`Aucun d'eux n'a osé la ramasser.`},
+   {c:5,t:`Dans dix ans, ils reviendront, et l'un d'eux aura cette photo dans sa poche.`}],
+  secret:[
+   {c:1,t:`Sur cette photo, les quatre amis se tenaient par l'épaule, comme toujours.`},
+   {c:2,t:`Tout le lycée pensait qu'ils se connaissaient depuis l'enfance.`},
+   {c:3,t:`En réalité, ils s'étaient rencontrés trois jours plus tôt, dans une salle d'attente.`},
+   {c:4,t:`Chacun croyait que les trois autres étaient amis depuis des années.`},
+   {c:5,t:`Ils l'apprendront ce soir, et ils riront jusqu'au matin.`}]},
+ '06_3':{
+  apres:[
+   {c:1,t:`La petite plante sortait de la fente depuis trois jours, seule au milieu du champ.`},
+   {c:2,t:`« Elle ne tiendra pas jusqu'à ce soir », a dit l'agriculteur à son fils.`},
+   {c:3,t:`Pendant la nuit, la terre s'est refermée autour d'elle et l'a poussée vers le haut.`},
+   {c:4,t:`Au matin, l'arbre dépassait le toit de la ferme.`},
+   {c:5,t:`Bientôt, tout le village viendra s'asseoir dessous, et personne n'expliquera rien.`}],
+  secret:[
+   {c:1,t:`Cette pousse verte tenait toute seule au milieu d'une terre morte.`},
+   {c:2,t:`On croyait qu'elle avait poussé là par hasard, portée par le vent.`},
+   {c:3,t:`En réalité, une femme venait l'arroser chaque nuit, avec la bouteille de sa voiture.`},
+   {c:4,t:`Elle faisait ce détour depuis quatre mois, sans le dire à personne.`},
+   {c:5,t:`Quand la photo sera publiée, elle reconnaîtra sa plante et se taira encore.`}]},
+ '07_1':{
+  apres:[
+   {c:1,t:`Ils ramassaient des déchets dans le parc depuis six heures du matin.`},
+   {c:2,t:`« Encore un sac et on s'arrête », a dit Théo en s'essuyant le front.`},
+   {c:3,t:`Mais chaque papier ramassé faisait pousser une fleur, exactement à la même place.`},
+   {c:4,t:`En une heure, la pelouse est devenue un champ de coquelicots.`},
+   {c:5,t:`L'année prochaine, la ville enverra trois cents bénévoles au même endroit.`}],
+  secret:[
+   {c:1,t:`Théo portait le tee-shirt bleu des bénévoles tous les dimanches, sans exception.`},
+   {c:2,t:`L'association croyait qu'il venait pour la nature, comme les autres.`},
+   {c:3,t:`En réalité, il cherchait une bague perdue dans ce parc par sa mère, vingt ans plus tôt.`},
+   {c:4,t:`Il avait déjà fouillé quatre cents mètres carrés, sac après sac.`},
+   {c:5,t:`Dimanche prochain, il arrivera au dernier carré, et il saura enfin.`}]},
+ '07_2':{
+  apres:[
+   {c:1,t:`Les huit mains étaient réunies au centre du cercle depuis une minute entière.`},
+   {c:2,t:`« On y va ? » a demandé Margot, la voix un peu tremblante.`},
+   {c:3,t:`Personne n'a répondu : aucune des huit mains ne voulait plus se détacher des autres.`},
+   {c:4,t:`Ils sont restés debout jusqu'à la nuit, sans lâcher.`},
+   {c:5,t:`Demain matin, ils partiront ensemble, ou ils ne partiront pas du tout.`}],
+  secret:[
+   {c:1,t:`Ces huit personnes se retrouvaient chaque samedi pour ce même geste.`},
+   {c:2,t:`On croyait qu'elles formaient une équipe, ou une association de quartier.`},
+   {c:3,t:`En réalité, elles ne s'étaient jamais parlé : chacune venait pour une raison différente.`},
+   {c:4,t:`Une seule connaissait toutes les autres, et n'avait jamais rien dit.`},
+   {c:5,t:`Samedi prochain, elle ne viendra pas, et le cercle ne se refermera plus.`}]},
+ '07_3':{
+  apres:[
+   {c:1,t:`Deux mains tenaient la pancarte au-dessus de la foule depuis le début du défilé.`},
+   {c:2,t:`« Baisse-la un peu, je ne vois plus rien ! » a crié quelqu'un derrière.`},
+   {c:3,t:`Sans prévenir, les lettres noires se sont effacées et une phrase est restée : « Commence par toi. »`},
+   {c:4,t:`Le porteur a regardé le carton presque vide, puis la Terre dessinée au feutre.`},
+   {c:5,t:`Il gardera cette pancarte, et il la ressortira dans dix ans.`}],
+  secret:[
+   {c:1,t:`Cette pancarte revenait à chaque manifestation, toujours au même endroit du cortège.`},
+   {c:2,t:`On pensait qu'elle appartenait à un militant connu du quartier.`},
+   {c:3,t:`En réalité, c'était une enfant de neuf ans qui l'avait dessinée, un soir de colère.`},
+   {c:4,t:`Sa mère la ressortait chaque année, sans jamais dire d'où elle venait.`},
+   {c:5,t:`À la prochaine marche, la fille aura dix-huit ans et la portera elle-même.`}]},
+ '08_1':{
+  apres:[
+   {c:1,t:`Le plateau attendait sur la table depuis dix minutes, encore chaud.`},
+   {c:2,t:`« Tu manges ou tu photographies ? » a demandé Hugo, déjà assis en face.`},
+   {c:3,t:`C'est alors que le hamburger a parlé, très poliment, pour demander qu'on le repose.`},
+   {c:4,t:`Les deux garçons sont sortis du restaurant sans se retourner.`},
+   {c:5,t:`Ce soir, ils cuisineront eux-mêmes, et ils n'en parleront à personne.`}],
+  secret:[
+   {c:1,t:`Ce hamburger était photographié dans ce restaurant depuis huit ans.`},
+   {c:2,t:`Les clients croyaient qu'on leur servait exactement le même.`},
+   {c:3,t:`En réalité, il n'était pas comestible : la salade était en plastique, la viande en résine.`},
+   {c:4,t:`Il avait posé pour trois cents affiches sans jamais quitter sa vitrine.`},
+   {c:5,t:`La semaine prochaine, on le remplacera, et il finira dans un musée de la publicité.`}]},
+ '08_2':{
+  apres:[
+   {c:1,t:`Clara hésitait devant le rayon depuis un quart d'heure.`},
+   {c:2,t:`« Prends ce que tu veux, on va fermer », a lancé une employée au bout de l'allée.`},
+   {c:3,t:`À cet instant, tous les paquets colorés ont affiché le nom de celui qui les mangerait.`},
+   {c:4,t:`Clara a lu son propre nom sur trois d'entre eux et a reculé d'un pas.`},
+   {c:5,t:`Demain, elle reviendra avec une liste, et elle ne lèvera plus les yeux.`}],
+  secret:[
+   {c:1,t:`Clara venait dans ce supermarché tous les soirs, à la même heure.`},
+   {c:2,t:`Ses parents croyaient qu'elle faisait les courses de la maison.`},
+   {c:3,t:`En réalité, elle remettait en rayon les produits que les clients abandonnaient n'importe où.`},
+   {c:4,t:`Elle faisait ce travail depuis six mois, sans être employée ni payée.`},
+   {c:5,t:`Quand le directeur l'apprendra, il lui proposera un contrat.`}]},
+ '08_3':{
+  apres:[
+   {c:1,t:`Le bol de légumes attendait au centre de la table, préparé depuis midi.`},
+   {c:2,t:`« Personne n'y touchera, tu le sais bien », a soupiré Mathilde en s'asseyant.`},
+   {c:3,t:`Pourtant, les brocolis se sont mis à sentir le gâteau au chocolat.`},
+   {c:4,t:`Toute la famille est entrée dans la cuisine en moins de trente secondes.`},
+   {c:5,t:`Dimanche prochain, ils redemanderont ce plat, et ils ne comprendront pas pourquoi.`}],
+  secret:[
+   {c:1,t:`Ce bol de légumes revenait sur la table chaque dimanche, depuis des années.`},
+   {c:2,t:`Les enfants croyaient que leur grand-mère aimait cuisiner sain.`},
+   {c:3,t:`En réalité, c'était la seule recette qu'elle savait faire, apprise à quatorze ans.`},
+   {c:4,t:`Elle avait caché ce détail pendant cinquante ans, derrière un air d'experte.`},
+   {c:5,t:`À son anniversaire, elle l'avouera enfin, et tout le monde en redemandera.`}]},
+ '09_1':{
+  apres:[
+   {c:1,t:`Nathan travaillait à son bureau depuis quatre heures, sans se lever une fois.`},
+   {c:2,t:`« Viens manger, ça va refroidir », a appelé son père depuis la cuisine.`},
+   {c:3,t:`Mais chaque exercice terminé en faisait apparaître deux autres, à la même page.`},
+   {c:4,t:`Nathan a compté : il en restait exactement mille quatre cents.`},
+   {c:5,t:`Il finira cette page un jour, et ce jour-là il saura pourquoi il travaillait.`}],
+  secret:[
+   {c:1,t:`Nathan révisait chaque soir sous la lampe, ses lunettes rondes sur le nez.`},
+   {c:2,t:`Sa famille croyait qu'il préparait le concours de médecine.`},
+   {c:3,t:`En réalité, il écrivait un roman, un chapitre par soir, caché sous ses cours.`},
+   {c:4,t:`Il en avait terminé trois cents pages sans que personne ouvre le tiroir.`},
+   {c:5,t:`L'an prochain, le livre sortira, et sa mère lira son nom sur la couverture.`}]},
+ '09_2':{
+  apres:[
+   {c:1,t:`Deux marcheurs étaient arrêtés sous le poteau depuis vingt minutes.`},
+   {c:2,t:`« Moi je prends Salaire, on verra plus tard », a dit le plus âgé en riant.`},
+   {c:3,t:`La flèche qu'il désignait s'est décrochée toute seule et est tombée à ses pieds.`},
+   {c:4,t:`Les deux hommes ont regardé les deux flèches restantes, sans un mot.`},
+   {c:5,t:`Ils repartiront demain, et aucun des deux ne prendra la même direction.`}],
+  secret:[
+   {c:1,t:`Ce panneau indiquait trois directions au milieu de nulle part.`},
+   {c:2,t:`Les randonneurs pensaient qu'il s'agissait d'une œuvre d'art abandonnée.`},
+   {c:3,t:`En réalité, une ancienne cheffe d'entreprise l'avait planté là le jour de sa démission.`},
+   {c:4,t:`Elle revenait chaque année vérifier que les trois flèches tenaient encore.`},
+   {c:5,t:`Cet été, elle en ajoutera une quatrième, et elle n'écrira rien dessus.`}]},
+ '09_3':{
+  apres:[
+   {c:1,t:`La silhouette montait depuis le matin, penchée en avant sous son sac.`},
+   {c:2,t:`« Il reste vingt minutes avant la nuit ! » a crié quelqu'un plus bas.`},
+   {c:3,t:`Au même moment, le sommet a reculé de cent mètres, puis encore de cent.`},
+   {c:4,t:`L'homme a posé son sac et s'est assis face au soleil qui descendait.`},
+   {c:5,t:`Demain, il redescendra, et il racontera qu'il est arrivé en haut.`}],
+  secret:[
+   {c:1,t:`Cet homme faisait la même ascension le dernier jour de chaque année.`},
+   {c:2,t:`Ses collègues croyaient qu'il partait simplement marcher en montagne.`},
+   {c:3,t:`En réalité, il montait brûler la liste des choses qu'il n'avait pas osé faire.`},
+   {c:4,t:`Le papier de cette année était le plus court de tous : trois lignes.`},
+   {c:5,t:`L'an prochain, il montera peut-être les mains vides.`}]},
+ '10_1':{
+  apres:[
+   {c:1,t:`La tête du robot attendait sur son socle depuis l'ouverture du salon.`},
+   {c:2,t:`« Ne t'approche pas trop, elle n'est pas allumée », a dit l'ingénieur à sa fille.`},
+   {c:3,t:`Pourtant, le robot a tourné les yeux vers l'enfant et a demandé son prénom.`},
+   {c:4,t:`L'ingénieur a cherché la prise, qui n'était branchée nulle part.`},
+   {c:5,t:`Demain, il effacera cette mémoire, et il ne dormira plus jamais tranquille.`}],
+  secret:[
+   {c:1,t:`Ce robot répondait aux visiteurs depuis trois ans, toujours avec la même voix douce.`},
+   {c:2,t:`Le public croyait qu'un programme choisissait chacune de ses phrases.`},
+   {c:3,t:`En réalité, une femme de soixante ans parlait pour lui, depuis une pièce voisine.`},
+   {c:4,t:`Elle avait tenu ce rôle sans qu'aucun ingénieur s'en aperçoive.`},
+   {c:5,t:`Le mois prochain, elle prendra sa retraite, et le robot ne dira plus rien.`}]},
+ '10_2':{
+  apres:[
+   {c:1,t:`Il travaillait devant ses six écrans depuis le début de la nuit.`},
+   {c:2,t:`« Tu viens dormir ? » a demandé sa mère depuis le couloir, sans entrer.`},
+   {c:3,t:`À cet instant, tous les écrans ont affiché la même phrase : « Nous aussi, on est fatigués. »`},
+   {c:4,t:`Le garçon a relu trois fois avant de toucher au clavier.`},
+   {c:5,t:`Cette nuit, il éteindra tout, et demain il ne racontera rien à personne.`}],
+  secret:[
+   {c:1,t:`Élie passait ses nuits devant les écrans, le visage bleu, très concentré.`},
+   {c:2,t:`Ses parents croyaient qu'il jouait en ligne avec des inconnus.`},
+   {c:3,t:`En réalité, il traduisait gratuitement des cours de français pour des élèves d'un autre pays.`},
+   {c:4,t:`Ils étaient devenus quatre cents, et aucun ne connaissait son vrai prénom.`},
+   {c:5,t:`L'an prochain, l'un d'eux viendra le remercier au lycée, devant toute la classe.`}]},
+ '10_3':{
+  apres:[
+   {c:1,t:`Les deux mains se serraient sur l'écran du laboratoire depuis le matin.`},
+   {c:2,t:`« C'est notre plus belle image de l'année », a dit la directrice aux journalistes.`},
+   {c:3,t:`Sans prévenir, la main bleue a serré plus fort et n'a plus voulu lâcher.`},
+   {c:4,t:`Personne, dans la salle, n'a osé éteindre l'ordinateur.`},
+   {c:5,t:`Demain, les deux mains seront toujours là, et l'image ne s'effacera pas.`}],
+  secret:[
+   {c:1,t:`Cette image servait d'affiche à tous les congrès sur l'intelligence artificielle.`},
+   {c:2,t:`On croyait que la main de droite appartenait au président de l'entreprise.`},
+   {c:3,t:`En réalité, c'était celle d'un stagiaire de dix-neuf ans, photographiée un vendredi soir.`},
+   {c:4,t:`Il n'avait jamais été payé pour cette pose, ni même cité.`},
+   {c:5,t:`À la rentrée, il racontera tout, et l'affiche disparaîtra en une journée.`}]},
+ '11_1':{
+  apres:[
+   {c:1,t:`Deux mains tenaient le petit globe devant les feuilles depuis un moment.`},
+   {c:2,t:`« Tu peux la garder droite ? Je photographie », a demandé Louise, appareil en main.`},
+   {c:3,t:`C'est alors que les océans du petit globe se sont mis à monter, doucement.`},
+   {c:4,t:`L'eau a débordé entre les doigts et a coulé sur l'herbe.`},
+   {c:5,t:`Personne ne les croira, mais la photo sera publiée partout demain.`}],
+  secret:[
+   {c:1,t:`Ce globe passait de main en main dans la classe depuis septembre.`},
+   {c:2,t:`Les élèves croyaient qu'il venait du laboratoire de sciences.`},
+   {c:3,t:`En réalité, chacun devait y écrire une promesse minuscule, invisible à l'œil nu.`},
+   {c:4,t:`Deux cents promesses couvraient déjà les continents, sans qu'on les voie.`},
+   {c:5,t:`En juin, le professeur apportera une loupe, et tout le monde lira.`}]},
+ '11_2':{
+  apres:[
+   {c:1,t:`Le sac attendait devant la barrière, plein de légumes du jardin.`},
+   {c:2,t:`« Tu le portes ou je le porte ? » a demandé Étienne à sa voisine.`},
+   {c:3,t:`Mais le sac est devenu plus lourd à chaque pas, comme s'il se remplissait seul.`},
+   {c:4,t:`Ils l'ont ouvert : il contenait maintenant des légumes pour tout l'immeuble.`},
+   {c:5,t:`À partir de demain, ils feront les courses pour les six étages.`}],
+  secret:[
+   {c:1,t:`Ce sac revenait chaque samedi devant la même barrière en bois.`},
+   {c:2,t:`Les voisins pensaient qu'une association distribuait ces légumes.`},
+   {c:3,t:`En réalité, un homme de quatre-vingts ans cultivait ce jardin tout seul, la nuit.`},
+   {c:4,t:`Il n'avait jamais voulu qu'on le remercie, ni même qu'on le voie.`},
+   {c:5,t:`Au printemps, quelqu'un le suivra, et le jardin ne sera plus un secret.`}]},
+ '11_3':{
+  apres:[
+   {c:1,t:`Les éoliennes tournaient lentement au-dessus des panneaux bleus, sans un bruit.`},
+   {c:2,t:`« Elles s'arrêtent toujours à midi », a expliqué le technicien à la classe en visite.`},
+   {c:3,t:`Pourtant, ce jour-là, elles se sont mises à tourner dans l'autre sens, toutes ensemble.`},
+   {c:4,t:`La colline s'est éclairée comme si le soleil sortait de la terre.`},
+   {c:5,t:`Bientôt, des ingénieurs viendront du monde entier, et personne n'expliquera rien.`}],
+  secret:[
+   {c:1,t:`Ces éoliennes se dressaient sur la colline depuis dix ans.`},
+   {c:2,t:`Les habitants croyaient qu'elles alimentaient la grande ville, au loin.`},
+   {c:3,t:`En réalité, elles ne servaient qu'à un seul village, caché derrière la vallée.`},
+   {c:4,t:`Personne, là-bas, n'avait jamais payé une facture d'électricité.`},
+   {c:5,t:`Quand le journal le racontera, tout le pays voudra habiter ce village.`}]},
+ '12_1':{
+  apres:[
+   {c:1,t:`Elle lisait dans le salon depuis deux heures, sans lever la tête.`},
+   {c:2,t:`« Tu as vu l'heure ? » a demandé quelqu'un derrière elle, très doucement.`},
+   {c:3,t:`Elle a répondu sans se retourner : la voix venait de son livre, page cent quatre.`},
+   {c:4,t:`La jeune femme a refermé le roman et l'a posé loin d'elle.`},
+   {c:5,t:`Ce soir, elle le rouvrira quand même, et elle répondra cette fois.`}],
+  secret:[
+   {c:1,t:`Sarah lisait le même roman depuis trois ans, toujours dans ce fauteuil.`},
+   {c:2,t:`Sa famille croyait qu'elle ne l'avait jamais terminé.`},
+   {c:3,t:`En réalité, elle l'avait lu quarante fois : son père y avait écrit dans les marges.`},
+   {c:4,t:`Elle n'avait montré ces phrases à personne, pas même à sa sœur.`},
+   {c:5,t:`L'été prochain, elle offrira le livre à sa sœur, et elle attendra.`}]},
+ '12_2':{
+  apres:[
+   {c:1,t:`La petite forêt poussait sur la pile de livres depuis le début de l'été.`},
+   {c:2,t:`« Il faudra la couper avant qu'elle atteigne le plafond », a plaisanté Margot.`},
+   {c:3,t:`Le soir même, la mousse a recouvert la table, puis la fenêtre, puis le mur.`},
+   {c:4,t:`La tasse verte est restée au milieu, comme un rocher dans un champ.`},
+   {c:5,t:`Demain, la forêt du dehors entrera par la fenêtre, et personne ne fermera rien.`}],
+  secret:[
+   {c:1,t:`Cette petite forêt poussait sur le même livre depuis trois ans.`},
+   {c:2,t:`Les visiteurs croyaient qu'il s'agissait d'une décoration achetée en magasin.`},
+   {c:3,t:`En réalité, le livre du dessous était creux : il contenait de la terre et des graines.`},
+   {c:4,t:`Un bibliothécaire l'avait préparé ainsi, puis avait quitté la ville sans rien dire.`},
+   {c:5,t:`Au printemps, un arbre percera la couverture, et on comprendra enfin.`}]},
+ '12_3':{
+  apres:[
+   {c:1,t:`Le château se dressait derrière le livre ouvert depuis le coucher du soleil.`},
+   {c:2,t:`« Ce n'est qu'un dessin, arrête de regarder », a dit son frère en éteignant la lampe.`},
+   {c:3,t:`Mais la petite porte s'est ouverte, et un vent froid est entré dans la chambre.`},
+   {c:4,t:`Les pages du livre se sont tournées toutes seules, jusqu'à la dernière.`},
+   {c:5,t:`Demain matin, la chambre sera vide, et le livre restera ouvert sur la table.`}],
+  secret:[
+   {c:1,t:`Ce livre restait ouvert sur la table du salon, toujours à la même page.`},
+   {c:2,t:`On croyait que personne, dans la maison, ne l'avait jamais lu.`},
+   {c:3,t:`En réalité, la grand-mère y entrait chaque nuit et en ressortait avant le jour.`},
+   {c:4,t:`Elle avait vécu là-bas plus d'années que dans sa propre maison.`},
+   {c:5,t:`Un soir, elle emmènera sa petite-fille, et elles ne rentreront qu'à l'aube.`}]},
+ '13_1':{
+  apres:[
+   {c:1,t:`L'affiche était accrochée dans le couloir depuis le matin, encore un peu de travers.`},
+   {c:2,t:`« Tu as compté combien de drapeaux ? » a demandé la professeure à son élève.`},
+   {c:3,t:`À cet instant, les drapeaux se sont détachés du papier et ont tourné dans le couloir.`},
+   {c:4,t:`Ils se sont posés un par un sur les casiers des élèves.`},
+   {c:5,t:`Demain, chacun découvrira le sien, et personne ne voudra le rendre.`}],
+  secret:[
+   {c:1,t:`Cette affiche était accrochée au même mur depuis quinze ans.`},
+   {c:2,t:`On croyait qu'elle venait du ministère, comme toutes les autres.`},
+   {c:3,t:`En réalité, une ancienne élève l'avait dessinée elle-même, drapeau par drapeau.`},
+   {c:4,t:`Elle avait ajouté son propre pays tout en bas, en très petit, sans le dire.`},
+   {c:5,t:`À la prochaine réunion, quelqu'un le remarquera, et on cherchera son nom.`}]},
+ '13_2':{
+  apres:[
+   {c:1,t:`Les six amis riaient depuis une minute, serrés les uns contre les autres.`},
+   {c:2,t:`« Attendez, on refait la photo, j'ai fermé les yeux ! » a crié Diana.`},
+   {c:3,t:`Sur la deuxième image, ils étaient sept, et personne ne connaissait le septième.`},
+   {c:4,t:`Ils ont regardé l'écran longtemps, sans oser recompter.`},
+   {c:5,t:`L'été prochain, ils reviendront dans ce parc, et ils compteront avant de sourire.`}],
+  secret:[
+   {c:1,t:`Ces six jeunes se retrouvaient dans ce parc chaque dimanche, depuis deux ans.`},
+   {c:2,t:`On croyait qu'ils étaient camarades de classe, ou amis d'enfance.`},
+   {c:3,t:`En réalité, ils venaient de six pays différents et n'avaient qu'une langue commune : le français.`},
+   {c:4,t:`Aucun n'avait jamais entendu les cinq autres parler leur langue maternelle.`},
+   {c:5,t:`Dimanche prochain, chacun apportera une chanson, et ils ne se comprendront plus.`}]},
+ '13_3':{
+  apres:[
+   {c:1,t:`Le globe tournait lentement sur son socle, couvert de petits drapeaux carrés.`},
+   {c:2,t:`« Ne le touchez pas, il est fragile », a prévenu la conservatrice du musée.`},
+   {c:3,t:`Pourtant, un drapeau s'est décollé, puis dix, puis tous, en quelques secondes.`},
+   {c:4,t:`Le globe est resté nu, bleu et vert, au milieu de la salle.`},
+   {c:5,t:`Demain, les visiteurs recolleront les drapeaux, et aucun ne reprendra sa place.`}],
+  secret:[
+   {c:1,t:`Ce globe était exposé dans la vitrine de l'école depuis vingt ans.`},
+   {c:2,t:`Les élèves croyaient qu'un professeur de géographie l'avait fabriqué.`},
+   {c:3,t:`En réalité, chaque drapeau avait été collé par un élève parti vivre ailleurs.`},
+   {c:4,t:`Il en manquait un seul, et l'emplacement vide attendait depuis huit ans.`},
+   {c:5,t:`Au mois de juin, une fille reviendra du Canada et collera le dernier.`}]},
+ '14_1':{
+  apres:[
+   {c:1,t:`Elle se tenait bras ouverts face à la vallée depuis le début du coucher de soleil.`},
+   {c:2,t:`« Tu peux baisser les bras, la photo est prise », a dit son amie derrière elle.`},
+   {c:3,t:`Mais le vent l'a soulevée de quelques centimètres, sans qu'elle se débatte.`},
+   {c:4,t:`Son amie a lâché l'appareil et n'a pas crié.`},
+   {c:5,t:`Ce soir, elles redescendront ensemble, et elles n'en parleront à personne.`}],
+  secret:[
+   {c:1,t:`Alice montait sur cette colline chaque fois qu'elle avait une décision à prendre.`},
+   {c:2,t:`Ses amies croyaient qu'elle aimait simplement les couchers de soleil.`},
+   {c:3,t:`En réalité, elle ouvrait les bras pour compter jusqu'à cent, comme son père le lui avait appris.`},
+   {c:4,t:`Elle avait pris ainsi toutes les décisions importantes de sa vie.`},
+   {c:5,t:`Demain, elle montera une dernière fois, et elle redescendra avec sa réponse.`}]},
+ '14_2':{
+  apres:[
+   {c:1,t:`La balance dorée était posée sur le marbre depuis l'ouverture de l'exposition.`},
+   {c:2,t:`« Elle penche toujours du même côté », a fait remarquer un visiteur à sa fille.`},
+   {c:3,t:`Au même instant, les deux plateaux se sont mis exactement au même niveau.`},
+   {c:4,t:`La salle entière s'est approchée, en silence, pour vérifier.`},
+   {c:5,t:`Demain, le musée changera les étiquettes, et plus personne ne comprendra rien.`}],
+  secret:[
+   {c:1,t:`Cette balance servait d'illustration dans tous les manuels de philosophie.`},
+   {c:2,t:`On croyait qu'elle appartenait à un grand musée européen.`},
+   {c:3,t:`En réalité, elle venait d'une brocante et n'avait jamais fonctionné.`},
+   {c:4,t:`Ses deux plateaux étaient soudés, et personne ne l'avait remarqué en trente ans.`},
+   {c:5,t:`Quand un élève le découvrira, la photo disparaîtra de tous les livres.`}]},
+ '14_3':{
+  apres:[
+   {c:1,t:`Elle était assise en tailleur sur le rocher depuis quarante minutes.`},
+   {c:2,t:`« On t'attend pour manger », a appelé sa mère depuis le chemin.`},
+   {c:3,t:`Elle n'a pas répondu : le lac, en face, avait cessé de bouger complètement.`},
+   {c:4,t:`Les montagnes s'y reflétaient comme dans un miroir posé à plat.`},
+   {c:5,t:`Elle reviendra chaque matin, et un jour l'eau bougera de nouveau.`}],
+  secret:[
+   {c:1,t:`Cette jeune femme venait s'asseoir sur ce rocher tous les jours à l'aube.`},
+   {c:2,t:`Les promeneurs croyaient qu'elle méditait, immobile pendant des heures.`},
+   {c:3,t:`En réalité, elle comptait les oiseaux qui traversaient le lac, un carnet dans la poche.`},
+   {c:4,t:`Elle notait ces chiffres depuis onze ans, sans les montrer à personne.`},
+   {c:5,t:`Cet automne, un laboratoire lui demandera ses carnets, et elle hésitera longtemps.`}]},
+ '15_1':{
+  apres:[
+   {c:1,t:`Les quatre amis se tenaient par les épaules au bord de la falaise.`},
+   {c:2,t:`« Une photo et on rentre, il va faire nuit », a dit Inès en levant le téléphone.`},
+   {c:3,t:`Sur l'image, le soleil s'était couché, mais eux quatre regardaient encore le lever.`},
+   {c:4,t:`Ils se sont retournés tous ensemble vers la mer, qui brillait à l'envers.`},
+   {c:5,t:`Demain, ils reviendront à la même heure, et ils vérifieront.`}],
+  secret:[
+   {c:1,t:`Ces quatre-là venaient sur la falaise le dernier soir de chaque été.`},
+   {c:2,t:`On croyait qu'ils fêtaient la fin des vacances, comme tout le monde.`},
+   {c:3,t:`En réalité, ils se disaient adieu : trois d'entre eux repartaient vivre à l'étranger.`},
+   {c:4,t:`Ils avaient répété ce geste six fois, sans jamais prononcer le mot.`},
+   {c:5,t:`L'été prochain, ils seront quatre de nouveau, et personne n'expliquera comment.`}]},
+ '15_2':{
+  apres:[
+   {c:1,t:`Les deux mains tenaient le petit globe depuis le début du cours.`},
+   {c:2,t:`« Montre-nous où tu es né », a demandé le professeur au nouvel élève.`},
+   {c:3,t:`Le doigt s'est posé sur un point, et ce point s'est éclairé sous la peinture.`},
+   {c:4,t:`Toute la classe s'est levée pour voir la lumière au milieu de l'Afrique.`},
+   {c:5,t:`Demain, chacun voudra essayer, et le globe ne s'éteindra plus.`}],
+  secret:[
+   {c:1,t:`Ce petit globe passait de classe en classe depuis la fondation de l'école.`},
+   {c:2,t:`Les élèves croyaient qu'il servait uniquement aux cours de géographie.`},
+   {c:3,t:`En réalité, chaque élève arrivé d'un autre pays y avait gratté son pays d'origine.`},
+   {c:4,t:`La peinture était usée à trente endroits, toujours les mêmes.`},
+   {c:5,t:`L'an prochain, un professeur remarquera ces marques, et il en fera une exposition.`}]},
+ '15_3':{
+  apres:[
+   {c:1,t:`Le défilé avançait dans la grande rue depuis une heure, drapeaux levés.`},
+   {c:2,t:`« Marchez plus lentement, on ne vous voit pas ! » a crié un photographe.`},
+   {c:3,t:`Au même moment, les vingt drapeaux ont changé de couleur et sont devenus identiques.`},
+   {c:4,t:`Les porteurs se sont arrêtés net, sans lâcher leurs mâts.`},
+   {c:5,t:`Demain, chaque pays réclamera ce drapeau, et personne ne saura le dessiner.`}],
+  secret:[
+   {c:1,t:`Ce défilé traversait la ville le même jour depuis vingt-cinq ans.`},
+   {c:2,t:`Les habitants pensaient qu'il s'agissait d'une fête organisée par la mairie.`},
+   {c:3,t:`En réalité, ces vingt personnes étaient d'une même famille, dispersée dans le monde.`},
+   {c:4,t:`Chacune rapportait le drapeau du pays où elle vivait, une fois par an.`},
+   {c:5,t:`L'année prochaine, ils seront vingt et un, et il faudra un drapeau de plus.`}]},
+ '16_1':{
+  apres:[
+   {c:1,t:`Le lac était immobile depuis le lever du jour, sans une seule ride.`},
+   {c:2,t:`« Ne jette pas de pierre, tu vas tout casser », a dit le grand-père à son petit-fils.`},
+   {c:3,t:`L'enfant a lancé la pierre, et ce sont les montagnes qui ont bougé, pas l'eau.`},
+   {c:4,t:`Les sapins du reflet sont restés parfaitement droits.`},
+   {c:5,t:`Ils reviendront demain, et ils ne diront rien à ceux qui les attendent en bas.`}],
+  secret:[
+   {c:1,t:`Ce lac apparaissait sur toutes les cartes postales de la région.`},
+   {c:2,t:`Les touristes croyaient qu'il portait ce nom depuis toujours.`},
+   {c:3,t:`En réalité, un village entier dormait dessous, recouvert lors de la construction du barrage.`},
+   {c:4,t:`Les anciens n'en parlaient jamais, mais ils connaissaient chaque rue par cœur.`},
+   {c:5,t:`Cet automne, l'eau baissera, et un clocher sortira au milieu du lac.`}]},
+ '16_2':{
+  apres:[
+   {c:1,t:`Les deux marcheurs montaient ce chemin depuis vingt minutes, en silence.`},
+   {c:2,t:`« On arrive bientôt en haut ? » a demandé la plus jeune, un peu essoufflée.`},
+   {c:3,t:`Mais à chaque pas, le chemin s'allongeait derrière eux et raccourcissait devant.`},
+   {c:4,t:`Ils sont sortis de la forêt en trois minutes, très loin de leur voiture.`},
+   {c:5,t:`Demain, ils reprendront ce chemin, et ils compteront leurs pas.`}],
+  secret:[
+   {c:1,t:`Ce chemin traversait la forêt depuis des siècles, toujours entretenu.`},
+   {c:2,t:`Les promeneurs pensaient que la commune envoyait quelqu'un le nettoyer.`},
+   {c:3,t:`En réalité, une famille s'en occupait de père en fils, sans salaire ni contrat.`},
+   {c:4,t:`Ils ramassaient les feuilles la nuit, pour que personne ne les voie faire.`},
+   {c:5,t:`Quand le dernier s'arrêtera, la forêt refermera le chemin en un seul hiver.`}]},
+ '16_3':{
+  apres:[
+   {c:1,t:`L'abeille travaillait sur cette fleur jaune depuis plusieurs minutes.`},
+   {c:2,t:`« Ne bouge pas, je la prends en photo », a chuchoté Léo à sa sœur.`},
+   {c:3,t:`L'abeille s'est tournée vers l'objectif et a attendu, parfaitement immobile.`},
+   {c:4,t:`Les deux enfants n'ont plus osé respirer pendant dix secondes.`},
+   {c:5,t:`Demain, ils reviendront au jardin, et elle les attendra sur la même fleur.`}],
+  secret:[
+   {c:1,t:`Cette abeille revenait sur la même fleur, à la même heure, chaque jour.`},
+   {c:2,t:`On croyait qu'elle butinait comme toutes les autres du jardin.`},
+   {c:3,t:`En réalité, elle était la dernière de sa ruche, disparue l'hiver précédent.`},
+   {c:4,t:`Elle refaisait seule le trajet que trente mille abeilles avaient fait avant elle.`},
+   {c:5,t:`Au printemps prochain, une nouvelle colonie s'installera, et elle les guidera.`}]},
+ '17_1':{
+  apres:[
+   {c:1,t:`Elle serrait son chien roux dans le jardin depuis un long moment.`},
+   {c:2,t:`« Lâche-le, il a chaud », a dit sa mère depuis la porte de la cuisine.`},
+   {c:3,t:`C'est alors que le chien a serré ses pattes autour d'elle, exactement comme un humain.`},
+   {c:4,t:`La jeune femme n'a pas bougé, et n'a rien dit à sa mère.`},
+   {c:5,t:`Ce soir, elle dormira par terre, à côté de lui, pour la première fois.`}],
+  secret:[
+   {c:1,t:`Chaque soir, Manon venait serrer son chien au fond du jardin.`},
+   {c:2,t:`Sa famille croyait qu'elle jouait simplement avec lui avant le dîner.`},
+   {c:3,t:`En réalité, elle lui racontait sa journée : c'était le seul à ne jamais l'interrompre.`},
+   {c:4,t:`Elle lui avait confié six ans de choses que personne d'autre ne savait.`},
+   {c:5,t:`L'an prochain, elle emmènera son frère au fond du jardin, et elle recommencera.`}]},
+ '17_2':{
+  apres:[
+   {c:1,t:`Le soleil descendait et Milou courait vers l'eau depuis dix minutes.`},
+   {c:2,t:`« Reviens ! Tu vas attraper froid ! » a crié son maître, essoufflé.`},
+   {c:3,t:`Le chien s'est arrêté net, s'est retourné et a répondu : « Encore cinq minutes. »`},
+   {c:4,t:`L'homme a laissé tomber la laisse dans le sable, sans un mot.`},
+   {c:5,t:`À partir de demain, il ne racontera cette promenade à personne.`}],
+  secret:[
+   {c:1,t:`Ce chien courait sur la même plage chaque matin, la langue pendante.`},
+   {c:2,t:`Les promeneurs croyaient qu'il appartenait à l'homme qui le suivait.`},
+   {c:3,t:`En réalité, il faisait le tour de six maisons et avait six maîtres différents.`},
+   {c:4,t:`Chacun l'appelait par un nom différent, et il répondait à tous.`},
+   {c:5,t:`Un jour, les six se rencontreront sur cette plage, et ils devront choisir.`}]},
+ '17_3':{
+  apres:[
+   {c:1,t:`Le chien roux et blanc posait devant l'objectif depuis cinq minutes.`},
+   {c:2,t:`« Regarde par ici, mon vieux ! » a crié la photographe en agitant la main.`},
+   {c:3,t:`Le chien a fermé la gueule et a pris exactement la pose qu'elle demandait.`},
+   {c:4,t:`Il a tenu la position jusqu'au dernier déclic, sans bouger une oreille.`},
+   {c:5,t:`La semaine prochaine, sa photo sera partout, et il fera semblant de ne pas savoir.`}],
+  secret:[
+   {c:1,t:`Ce chien roux et blanc était le plus photographié du village.`},
+   {c:2,t:`On croyait qu'il vivait à la ferme, en haut du pré.`},
+   {c:3,t:`En réalité, il attendait chaque jour au même endroit un enfant parti depuis deux ans.`},
+   {c:4,t:`Personne n'avait jamais réussi à le faire changer de place.`},
+   {c:5,t:`Cet été, une voiture s'arrêtera près du pré, et il reconnaîtra la voix.`}]},
+ '18_1':{
+  apres:[
+   {c:1,t:`La foule levait les bras devant la scène depuis le début du concert.`},
+   {c:2,t:`« Tous ensemble maintenant ! » a crié la chanteuse dans son micro.`},
+   {c:3,t:`À cet instant, les milliers de voix ont chanté une chanson que personne n'avait apprise.`},
+   {c:4,t:`Les musiciens se sont arrêtés de jouer et ont écouté jusqu'au bout.`},
+   {c:5,t:`Demain, personne ne saura la rechanter, et tout le monde la cherchera.`}],
+  secret:[
+   {c:1,t:`Cette photo de concert était affichée dans toutes les salles de la ville.`},
+   {c:2,t:`On croyait qu'elle montrait la foule d'un grand festival d'été.`},
+   {c:3,t:`En réalité, il n'y avait que quatre-vingts personnes : le photographe avait tout multiplié.`},
+   {c:4,t:`Le groupe n'avait jamais joué devant plus de cent spectateurs.`},
+   {c:5,t:`Le mois prochain, ils rempliront le stade, et cette photo deviendra vraie.`}]},
+ '18_2':{
+  apres:[
+   {c:1,t:`Les deux mains jouaient la même mélodie depuis une demi-heure.`},
+   {c:2,t:`« Tu peux nous jouer autre chose ? » a demandé quelqu'un dans le public.`},
+   {c:3,t:`Les mains ont continué toutes seules, alors que le musicien s'était levé.`},
+   {c:4,t:`La guitare a fini le morceau, puis s'est tue d'un coup.`},
+   {c:5,t:`Demain soir, il reviendra sur cette scène, et il ne touchera pas l'instrument.`}],
+  secret:[
+   {c:1,t:`Ces mains jouaient dans tous les bars de la ville depuis vingt ans.`},
+   {c:2,t:`Le public croyait qu'elles appartenaient à un musicien de passage.`},
+   {c:3,t:`En réalité, c'était le professeur de mathématiques du lycée, qui jouait masqué.`},
+   {c:4,t:`Aucun de ses élèves ne l'avait jamais reconnu, même assis au premier rang.`},
+   {c:5,t:`À la fête de la musique, il montera sans masque, et la salle comprendra.`}]},
+ '18_3':{
+  apres:[
+   {c:1,t:`Le musicien jouait dans la rue pavée depuis le début de l'après-midi.`},
+   {c:2,t:`« Encore une, s'il vous plaît ! » a demandé une femme en s'arrêtant.`},
+   {c:3,t:`Il a joué, et les graffitis des murs se sont mis à bouger en rythme.`},
+   {c:4,t:`Les passants se sont adossés aux immeubles, sans oser applaudir.`},
+   {c:5,t:`Demain, il reviendra à la même heure, et la rue l'attendra.`}],
+  secret:[
+   {c:1,t:`Cet homme au béret jouait dans la même rue depuis quinze ans.`},
+   {c:2,t:`Les habitants pensaient qu'il vivait de la monnaie laissée dans son étui.`},
+   {c:3,t:`En réalité, il redonnait tout, chaque soir, au refuge du quartier.`},
+   {c:4,t:`Il n'avait jamais gardé une seule pièce pour lui.`},
+   {c:5,t:`Quand le journal local le racontera, la rue sera pleine dès le lendemain.`}]},
+ '19_1':{
+  apres:[
+   {c:1,t:`Le repas durait depuis deux heures et personne ne parlait de partir.`},
+   {c:2,t:`« Encore un peu de gâteau ? » a demandé l'homme au pull gris à sa voisine.`},
+   {c:3,t:`Au même moment, la baie vitrée a montré le jardin tel qu'il était trente ans plus tôt.`},
+   {c:4,t:`Les six convives ont tourné la tête ensemble, la fourchette en l'air.`},
+   {c:5,t:`Demain, ils reviendront à la même heure, et ils s'assiéront dans le même ordre.`}],
+  secret:[
+   {c:1,t:`Autour de la table, tout le monde riait et se resservait.`},
+   {c:2,t:`Seule la grand-mère ne mangeait pas : elle fixait la chaise vide, au bout.`},
+   {c:3,t:`Personne ne savait qu'elle avait invité le frère qu'on ne nommait plus depuis quarante ans.`},
+   {c:4,t:`Quand la sonnette a retenti, les rires se sont arrêtés d'un coup.`},
+   {c:5,t:`L'an prochain, il y aura une chaise de plus et une photo à refaire.`}]},
+ '19_2':{
+  apres:[
+   {c:1,t:`Les cadeaux attendaient au pied du sapin depuis le début de la soirée.`},
+   {c:2,t:`« On ouvre à minuit, pas avant », a rappelé la mère aux enfants.`},
+   {c:3,t:`À minuit, chaque paquet portait le nom de celui qui l'avait offert, pas de celui qui le recevait.`},
+   {c:4,t:`Personne n'a osé toucher le premier paquet.`},
+   {c:5,t:`L'année prochaine, ils s'offriront les mêmes, et ils comprendront enfin pourquoi.`}],
+  secret:[
+   {c:1,t:`Ce sapin revenait dans le même salon depuis vingt-deux ans.`},
+   {c:2,t:`Les enfants croyaient qu'on le rachetait chaque décembre.`},
+   {c:3,t:`En réalité, c'était toujours le même arbre, replanté dans le jardin après les fêtes.`},
+   {c:4,t:`Il avait grandi de cinq mètres et ne passait presque plus la porte.`},
+   {c:5,t:`L'hiver prochain, il restera dehors, et la famille fêtera dans le jardin.`}]},
+ '19_3':{
+  apres:[
+   {c:1,t:`La fête durait depuis le coucher du soleil, sous les guirlandes allumées.`},
+   {c:2,t:`« Encore une chanson et on range », a dit le garçon à la guitare.`},
+   {c:3,t:`Mais chaque ampoule s'est éteinte à la fin d'une chanson, une par une.`},
+   {c:4,t:`Quand il n'en est resté qu'une, plus personne n'a voulu chanter.`},
+   {c:5,t:`L'été prochain, ils rallumeront tout, et ils commenceront par la dernière chanson.`}],
+  secret:[
+   {c:1,t:`Cette terrasse accueillait la même fête le premier samedi d'août.`},
+   {c:2,t:`Les invités croyaient qu'elle appartenait à la famille qui les recevait.`},
+   {c:3,t:`En réalité, personne n'habitait là : la maison était vide depuis quinze ans.`},
+   {c:4,t:`Quelqu'un tendait les guirlandes chaque année, sans jamais rester dîner.`},
+   {c:5,t:`Cet été, un invité arrivera plus tôt, et il verra qui accroche les ampoules.`}]},
+ '20_1':{
+  apres:[
+   {c:1,t:`Les quatre amies regardaient le soleil descendre depuis un quart d'heure.`},
+   {c:2,t:`« On se promet de revenir chaque année », a proposé Jade, la voix sérieuse.`},
+   {c:3,t:`C'est alors que leurs quatre ombres se sont détachées et sont parties devant elles.`},
+   {c:4,t:`Les ombres ont continué à marcher jusqu'à disparaître dans l'herbe sèche.`},
+   {c:5,t:`Dans un an, elles reviendront ici, et leurs ombres les attendront.`}],
+  secret:[
+   {c:1,t:`Ces quatre amies venaient dans ce champ chaque fin d'année scolaire.`},
+   {c:2,t:`On croyait qu'elles étaient inséparables depuis toujours.`},
+   {c:3,t:`En réalité, l'une d'elles n'avait été invitée qu'une seule fois, par erreur.`},
+   {c:4,t:`Elle était revenue les six années suivantes, sans que personne ose le dire.`},
+   {c:5,t:`L'été prochain, les trois autres lui écriront enfin, et elles diront la vérité.`}]},
+ '20_2':{
+  apres:[
+   {c:1,t:`Il était assis là depuis le début de la pluie, la tête contre sa main.`},
+   {c:2,t:`« Tiens, prends mon parapluie », a dit une inconnue en s'arrêtant devant lui.`},
+   {c:3,t:`Quand il a levé les yeux, la pluie s'était arrêtée au-dessus d'eux deux seulement.`},
+   {c:4,t:`Autour, l'eau continuait de tomber sur le sable et sur la mer grise.`},
+   {c:5,t:`Demain, il cherchera cette femme dans toute la ville, et il la trouvera.`}],
+  secret:[
+   {c:1,t:`On le voyait souvent assis au bord de l'eau, seul, par tous les temps.`},
+   {c:2,t:`Les gens croyaient qu'il n'avait aucun ami dans cette ville.`},
+   {c:3,t:`En réalité, il attendait là un message qu'il avait promis d'attendre dix ans.`},
+   {c:4,t:`Il en était à la neuvième année, sans avoir manqué un seul dimanche.`},
+   {c:5,t:`L'hiver prochain, le téléphone sonnera, et il ne saura pas quoi répondre.`}]},
+ '20_3':{
+  apres:[
+   {c:1,t:`Les quatre amies riaient dans l'herbe depuis le début de l'après-midi.`},
+   {c:2,t:`« Arrêtez, j'ai mal aux joues ! » a dit Zoé en essuyant ses larmes.`},
+   {c:3,t:`Pourtant, leur rire a continué tout seul, alors qu'elles s'étaient tues.`},
+   {c:4,t:`Le parc entier s'est mis à rire avec elles, les arbres compris.`},
+   {c:5,t:`Demain, elles reviendront s'asseoir ici, et elles n'oseront plus plaisanter.`}],
+  secret:[
+   {c:1,t:`Ces quatre amies se photographiaient dans ce parc chaque mois de juin.`},
+   {c:2,t:`Tout le monde croyait qu'elles se disaient absolument tout.`},
+   {c:3,t:`En réalité, chacune gardait la même chose secrète : elle voulait partir loin.`},
+   {c:4,t:`Aucune n'avait osé l'avouer, de peur de décevoir les trois autres.`},
+   {c:5,t:`En septembre, elles se retrouveront dans la même ville, à mille kilomètres d'ici.`}]}
+};
+const REPLI_COURT = {
+ apres:{ ph:`01_1`, ou:`« le garçon au sac à dos », thème 1` },
+ secret:{ ph:`19_1`, ou:`« le repas de famille », thème 19` }
+};
+
 /* ============ 3. ÉTAT ============ */
 const $ = function(id){ return document.getElementById(id); };
 let theme = THEMES[0];
 let iPhoto = 0;
 let photoPerso = null;
 let motsImposes = theme.mots.slice();
-let typeQ = 'reflexion';
+let typeQ = 'apres';
 let questionPerso = '';
-let min1 = 80, min2 = 80, duree = 25;
+let min1 = 80, min2 = 80, max2 = 70, duree = 25;
+const MOTS_LIGNE = 13;
+const estCourt = () => typeQ === 'apres' || typeQ === 'secret';
+const planActuel = () => estCourt() ? PLAN_COURT[typeQ] : PLAN2[typeQ];
+const plancher = () => Math.max(20, Math.round(max2 * 0.55));
+const nbLignes = n => Math.max(1, Math.round(n / MOTS_LIGNE));
 
 const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
@@ -1284,7 +2212,7 @@ function construireMethode1(){
   brancherChips($('methode1'),'texte1'); brancherChips($('vocab1'),'texte1');
 }
 function construireMethode2(){
-  const p = PLAN2[typeQ];
+  const p = planActuel();
   $('sousPlan').textContent = p.sous;
   $('methode2').innerHTML = blocsEtapes(p.etapes);
   $('vocab2').innerHTML = blocsVocab(p.vocab);
@@ -1308,28 +2236,83 @@ function rendreEx1(){
   $('ex1').innerHTML = ph.ex1 ? corpsExemple(ph.ex1, criteres().map(c=>c.titre), true) : A_VENIR;
 }
 function rendreEx2(){
+  const noms = planActuel().etapes.map(e=>e.titre);
+  if(estCourt()){
+    const f = photoPerso ? null : photoActive().f;
+    const propre = f && EX_COURTS[f] && EX_COURTS[f][typeQ];
+    if(propre){ $('ex2').innerHTML = corpsExemple(propre, noms, false); return; }
+    let seg = null, ou = '';
+    if(!photoPerso){
+      theme.photos.forEach(p=>{
+        if(!seg && EX_COURTS[p.f] && EX_COURTS[p.f][typeQ]){ seg = EX_COURTS[p.f][typeQ]; ou = 'la photo « ' + p.legende +' » du même thème'; }
+      });
+    }
+    if(!seg){ const r = REPLI_COURT[typeQ]; seg = EX_COURTS[r.ph][typeQ]; ou = r.ou; }
+    $('ex2').innerHTML = '<p class="mini" style="margin:0 0 12px">L\'exemple de cette photo n\'est pas encore écrit. En attendant, voici celui de ' + esc(ou) +
+      ' : regarde le montage des cinq lignes, pas les personnages, qui ne sont pas ceux de ton image.</p>' +
+      corpsExemple(seg, noms, false);
+    return;
+  }
   if(photoPerso || questionPerso.trim()){ $('ex2').innerHTML = SANS_EX; return; }
   const seg = typeQ === 'reflexion' ? theme.exR : theme.exC;
-  $('ex2').innerHTML = (seg && seg.length) ? corpsExemple(seg, PLAN2[typeQ].etapes.map(e=>e.titre), false) : A_VENIR;
+  $('ex2').innerHTML = (seg && seg.length) ? corpsExemple(seg, noms, false) : A_VENIR;
 }
 
 /* ============ 9. SUJET DU SECOND TRAVAIL ============ */
-function questionActuelle(){ return questionPerso.trim() || sujetActif()[typeQ] || ''; }
+function questionActuelle(){
+  if(questionPerso.trim()) return questionPerso.trim();
+  if(estCourt()) return SUJETS_COURTS[typeQ];
+  return sujetActif()[typeQ] || '';
+}
+function majPhoto2(){
+  const src = photoPerso ? photoPerso.dataUrl : IMG[photoActive().f];
+  const leg = photoPerso ? 'Ta photo' : photoActive().legende;
+  $('photo2').innerHTML = '<img src="'+src+'" alt=""><div class="leg2">'+esc(leg)+
+    ' — la même photo que dans le premier travail.</div>';
+}
 function afficherQuestion(){
   const q = questionActuelle();
   $('questionTexte').textContent = q || 'Colle ici la question que ton professeur t\'a donnée.';
+  const c = estCourt();
+  if(c) majPhoto2();
   $('questionLien').textContent = questionPerso.trim() ? 'Sujet personnalisé'
-    : (photoPerso ? 'Avec ta photo, écris ta question ci-dessous' : 'En lien avec le thème : ' + theme.titre.toLowerCase());
+    : (c ? (photoPerso ? 'D\'après ta photo' : 'D\'après la photo choisie')
+         : (photoPerso ? 'Avec ta photo, écris ta question ci-dessous' : 'En lien avec le thème : ' + theme.titre.toLowerCase()));
+  let note = '';
+  if(c && !photoPerso && !questionPerso.trim()){
+    const t3 = photoActive().c3;
+    if(typeQ === 'secret' && t3 === 'elements')
+      note = 'Cette photo ne montre aucun personnage. Imagine alors qui vient d\'entrer dans le cadre, ou choisis une autre photo du thème.';
+    else if(typeQ === 'secret' && t3 === 'etres')
+      note = 'Le personnage peut être l\'animal, ou celui qu\'on ne voit pas sur la photo.';
+    else if(typeQ === 'apres' && t3 === 'elements')
+      note = 'Aucun personnage ici : fais entrer quelqu\'un dans la scène, ou choisis une autre photo du thème.';
+  }
+  $('noteSujet').textContent = note;
 }
-$('btnReflexion').onclick = ()=> changerType('reflexion');
-$('btnCreativite').onclick = ()=> changerType('creativite');
+const BTN_Q = { apres:'btnApres', secret:'btnSecret', reflexion:'btnReflexion', creativite:'btnCreativite' };
+Object.keys(BTN_Q).forEach(k=>{ $(BTN_Q[k]).onclick = ()=> changerType(k); });
 function changerType(t){
   typeQ = t;
-  $('btnReflexion').setAttribute('aria-pressed', String(t==='reflexion'));
-  $('btnCreativite').setAttribute('aria-pressed', String(t==='creativite'));
-  construireMethode2(); afficherQuestion(); rendreEx2(); $('sortie2').innerHTML='';
+  Object.keys(BTN_Q).forEach(k=> $(BTN_Q[k]).setAttribute('aria-pressed', String(k===t)));
+  const c = estCourt();
+  $('photo2').hidden = !c;
+  $('texte2').classList.toggle('court', c);
+  $('autreQuestion').textContent = c ? 'Autre photo' : 'Autre sujet';
+  $('sousReponse').textContent = c
+    ? 'Cinq lignes maximum. Au moins un temps du passé et un temps du futur.'
+    : 'Réponds vraiment à la question posée, du début à la fin.';
+  $('texte2').placeholder = c
+    ? (t === 'apres' ? 'Quelques secondes plus tard,…' : 'Ce jour-là, tout paraissait normal…')
+    : 'Écris ici…';
+  construireMethode2(); afficherQuestion(); rendreEx2(); $('sortie2').innerHTML=''; compter(2);
 }
 $('autreQuestion').onclick = ()=>{
+  if(estCourt() && !photoPerso){
+    iPhoto = (iPhoto + 1) % theme.photos.length;
+    $('sortie1').innerHTML=''; majSujet();
+    return;
+  }
   const autres = THEMES.filter(t=>t.pret && t.n!==theme.n);
   if(!autres.length) return;
   allerAuTheme(autres[Math.floor(Math.random()*autres.length)].n);
@@ -1338,7 +2321,26 @@ $('champQuestion').addEventListener('input', e=>{ questionPerso = e.target.value
 function majSujet(){ afficherPhoto(); construireMethode1(); majPastilles(); afficherQuestion(); rendreEx1(); rendreEx2(); }
 
 /* ============ 10. COMPTEUR ============ */
+function compterCourt(){
+  const n = nbMots($('texte2').value), pl = plancher(), haut = Math.round(max2*1.4), l = nbLignes(n);
+  $('compte2').textContent = n + (n>1 ? ' mots' : ' mot') + (n ? ' · ≈ '+l+' ligne'+(l>1?'s':'') : '');
+  $('curseur2').style.left = Math.min(100, n/haut*100) + '%';
+  $('seuil2').style.left = (max2/haut*100) + '%';
+  $('zone2').style.left = (pl/haut*100) + '%';
+  $('zone2').style.width = ((max2-pl)/haut*100) + '%';
+  $('bornes2').innerHTML = '<span>0</span><span>'+pl+'</span><span>'+max2+'</span><span>'+haut+'</span>';
+  let msg, col;
+  if(n === 0){ msg='Cinq lignes maximum, soit environ '+max2+' mots.'; col='var(--s2)'; }
+  else if(n < pl){ msg='Encore un peu : un récit complet tient en quatre ou cinq lignes.'; col='var(--s2)'; }
+  else if(n <= max2){ msg='Bonne longueur.'; col='var(--vert)'; }
+  else if(n <= max2+15){ msg='Un peu long : tu dépasses les cinq lignes.'; col='var(--laiton)'; }
+  else { msg='Trop long : resserre, le correcteur s\'arrête à la cinquième ligne.'; col='var(--rouge)'; }
+  $('verdict2').textContent=msg; $('verdict2').style.color=col; $('compte2').style.color=col;
+  const pi = document.querySelector('#partie2 .piste');
+  if(pi) pi.classList.toggle('trop', n > max2);
+}
 function compter(p){
+  if(p === 2 && estCourt()){ compterCourt(); return; }
   const min = p===1 ? min1 : min2;
   const n = nbMots($('texte'+p).value), max = min*2;
   $('compte'+p).textContent = n + (n>1 ? ' mots' : ' mot');
@@ -1376,13 +2378,34 @@ function ligne(etat, titre, detail){
 }
 function verifier(p){
   const t = $('texte'+p).value.trim(), n = nbMots(t), min = p===1?min1:min2;
-  if(n < 20){
-    $('sortie'+p).innerHTML = '<div class="err-box">Écris au moins une vingtaine de mots avant de vérifier.</div>';
+  const court = p===2 && estCourt();
+  if(n < (court ? 15 : 20)){
+    $('sortie'+p).innerHTML = '<div class="err-box">Écris au moins '+(court?'quinze mots':'une vingtaine de mots')+' avant de vérifier.</div>';
     return;
   }
   let auto = '';
-  auto += ligne(n>=min ? 'ok':'non', 'La longueur',
-    n>=min ? n+' mots, le minimum de '+min+' est atteint.' : 'Il te manque '+(min-n)+' mots pour atteindre '+min+'.');
+  if(court){
+    const pl = plancher();
+    auto += ligne(n>max2 ? 'non' : (n<pl ? 'att' : 'ok'), 'La longueur',
+      n>max2 ? n+' mots, soit environ '+nbLignes(n)+' lignes : il faut couper une quinzaine de mots.'
+             : (n<pl ? n+' mots seulement : la consigne attend un récit complet, en quatre ou cinq lignes.'
+                     : n+' mots, environ '+nbLignes(n)+' lignes : la longueur est bonne.'));
+    const ps = marquesPasse(t), fu = marquesFutur(t);
+    auto += ligne(ps.length ? 'ok':'non', 'Un temps du passé',
+      ps.length ? 'Repéré dans ton texte : '+ps.slice(0,3).map(esc).join(', ')+'.'
+                : 'Aucune marque du passé trouvée : imparfait (il était, elle regardait) ou passé composé (il a dit).');
+    auto += ligne(fu.length ? 'ok':'non', 'Un temps du futur',
+      fu.length ? 'Repéré dans ton texte : '+fu.slice(0,3).map(esc).join(', ')+'.'
+                : 'Aucune marque du futur trouvée : futur simple (il sera, ils comprendront) ou « aller » + infinitif (ça va changer).');
+    const par = paroles(t);
+    auto += ligne(par ? 'ok' : (typeQ==='apres' ? 'non' : 'att'), 'Les paroles des personnages',
+      par ? 'Ton texte fait parler quelqu\'un.'
+          : (typeQ==='apres' ? 'Le sujet demande ce que disent les personnages : ajoute une réplique entre guillemets.'
+                             : 'Une réplique n\'est pas exigée ici, mais elle rend la révélation plus vivante.'));
+  } else {
+    auto += ligne(n>=min ? 'ok':'non', 'La longueur',
+      n>=min ? n+' mots, le minimum de '+min+' est atteint.' : 'Il te manque '+(min-n)+' mots pour atteindre '+min+'.');
+  }
 
   if(p===1){
     const manquants = motsImposes.filter(m=>!utilise(m, t));
@@ -1402,18 +2425,20 @@ function verifier(p){
   auto += ligne(fin ? 'ok':'non', 'Le point final',
     fin ? 'Ton texte se termine par un point.' : 'Il manque un point à la fin de ton texte.');
 
-  const etapes = p===1 ? criteres() : PLAN2[typeQ].etapes;
+  const etapes = p===1 ? criteres() : planActuel().etapes;
+  const relect = court ? RELECTURE_COURT.concat(RELECTURE) : RELECTURE;
   const coches = etapes.map((e,i)=>
     '<label class="coche"><input type="checkbox" data-v="'+p+'"><span>'+esc(e.titre)+
     '<em>'+esc(e.verif)+'</em></span></label>').join('')
-    + RELECTURE.map(r=>
+    + relect.map(r=>
     '<label class="coche"><input type="checkbox" data-v="'+p+'"><span>'+esc(r.t)+
     '<em>'+esc(r.e)+'</em></span></label>').join('');
 
   $('sortie'+p).innerHTML =
     '<div class="verif">'+
       '<h3>Ce qui se vérifie tout seul</h3>'+
-      '<p class="sous">L\'application compte et compare : elle ne juge pas la qualité de ton français.</p>'+
+      '<p class="sous">L\'application compte et compare : elle ne juge pas la qualité de ton français.'+
+        (court ? ' Pour les temps, elle repère les formes les plus fréquentes et peut se tromper : c\'est un signal, pas une correction.' : '')+'</p>'+
       auto+
       '<h3 class="suite">Ce que tu dois relire toi-même</h3>'+
       '<p class="sous">Reprends ton texte point par point et coche quand c\'est vérifié.</p>'+
@@ -1438,7 +2463,8 @@ $('verifier1').onclick = ()=>verifier(1);
 $('verifier2').onclick = ()=>verifier(2);
 
 /* ============ 12. RÉGLAGES, CHRONO, ONGLETS, OUTILS ============ */
-function enrRegl(){ ecrire(CLE_REGL, {min1:min1,min2:min2,duree:duree}); }
+function enrRegl(){ ecrire(CLE_REGL, {min1:min1,min2:min2,max2:max2,duree:duree}); }
+$('max2').addEventListener('input', e=>{ max2 = +e.target.value||70; compter(2); enrRegl(); });
 $('min1').addEventListener('input', e=>{ min1 = +e.target.value||80; compter(1); enrRegl(); });
 $('min2').addEventListener('input', e=>{ min2 = +e.target.value||80; compter(2); enrRegl(); });
 $('duree').addEventListener('input', e=>{ duree = +e.target.value||25; razChrono(); enrRegl(); });
@@ -1492,7 +2518,7 @@ document.querySelectorAll('[data-telecharge]').forEach(b=>{
     if(!t) return;
     const sujet = p===1 ? (photoPerso ? 'Photo importée' : theme.titre + ' : ' + photoActive().legende) : questionActuelle();
     telecharger('copie-'+(p===1?'photo':'question')+'.txt',
-      'Date : '+dateFr(new Date())+'\nTravail : '+(p===1?'Description de photo':'Réflexion ou créativité')+
+      'Date : '+dateFr(new Date())+'\nTravail : '+(p===1?'Description de photo':NOM_Q[typeQ])+
       '\nSujet : '+sujet+'\nMots : '+nbMots(t)+'\n\n'+t+'\n');
   };
 });
@@ -1512,7 +2538,7 @@ function enregistrer(p, mots, total){
   dejaEnr[cle] = true;
   let h = lire(CLE_HISTO) || [];
   h.unshift({ d:new Date().toISOString(),
-    t: p===1 ? 'Photo' : (typeQ==='reflexion'?'Réflexion':'Créativité'),
+    t: p===1 ? 'Photo' : NOM_Q[typeQ],
     s: p===1 ? (photoPerso ? 'Ma photo' : theme.titre) : questionActuelle().slice(0,60),
     m: mots, v: total });
   h = h.slice(0,30);
@@ -1533,9 +2559,10 @@ construireMethode1();
 construireMethode2();
 majSujet();
 const r = lire(CLE_REGL);
-if(r){ min1 = r.min1||80; min2 = r.min2||80; duree = r.duree||25;
-       $('min1').value = min1; $('min2').value = min2; $('duree').value = duree; }
+if(r){ min1 = r.min1||80; min2 = r.min2||80; max2 = r.max2||70; duree = r.duree||25;
+       $('min1').value = min1; $('min2').value = min2; $('max2').value = max2; $('duree').value = duree; }
 reste = duree*60;
+changerType(typeQ);
 compter(1); compter(2); majChrono();
 montrerHistorique(lire(CLE_HISTO));
 })();
