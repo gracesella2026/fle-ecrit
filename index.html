@@ -38,7 +38,16 @@ html,body{margin:0;padding:0;background:var(--papier)}
 .onglet b{display:block;font-family:var(--serif);font-size:1.08rem;font-weight:600;color:var(--encre)}
 .onglet[aria-selected="true"]{background:var(--blanc);border-color:var(--voile);border-bottom:1px solid var(--blanc)}
 .onglet:not([aria-selected="true"]):hover{background:var(--s5)}
-@media(max-width:640px){.onglets{padding:0 12px}.onglet{padding:11px 13px;font-size:.82rem}}
+@media(max-width:640px){
+  html,body{overflow-x:hidden}
+  .onglets{padding:0 8px}
+  .onglet{flex:1 1 0;min-width:0;padding:10px 6px;font-size:.72rem;text-align:left}
+  .onglet b{font-size:.94rem;line-height:1.15}
+  .bascule button{padding:9px 5px;font-size:.8rem;line-height:1.25}
+  .fam-tete{font-size:.68rem;letter-spacing:.04em}
+  .sujet{padding:14px 15px}
+  .sujet p{font-size:1.02rem}
+}
 
 .grille{display:grid;grid-template-columns:1fr 1fr;gap:34px;padding:30px 26px 0}
 @media(max-width:900px){.grille{grid-template-columns:1fr;gap:28px;padding:24px 18px 0}.tete{padding:26px 18px 18px}.outils{align-items:stretch;width:100%}}
@@ -347,7 +356,7 @@ textarea:focus{border-color:var(--s3)}
       <summary>Comment s'en servir</summary>
       <div class="corps">
         <h4>Le principe</h4>
-        <p>L'épreuve écrite comporte deux travaux distincts, et l'application les sépare en deux onglets. La description de photo doit contenir quatre éléments : le lieu, le temps qu'il fait, les personnages, les actions. Cinq mots imposés doivent y figurer ; ils passent au vert dès que tu les emploies. Le second travail bascule entre une question de réflexion et une consigne de créativité, chacune avec son plan en quatre mouvements et ses temps verbaux.</p>
+        <p>L'épreuve écrite comporte deux travaux distincts, et l'application les sépare en deux onglets. La description de photo doit contenir quatre éléments : le lieu, le temps qu'il fait, les personnages, les actions. Cinq mots imposés doivent y figurer ; ils passent au vert dès que tu les emploies. Le second travail propose quatre sujets au choix : les deux consignes courtes tirées de la photo, en cinq lignes, et les deux sujets du format long. Chacun a son plan et ses temps verbaux.</p>
 
         <h4>Les deux formats du second travail</h4>
         <p>Le format court applique les nouvelles consignes : deux sujets au choix, tous les deux tirés de la photo, cinq lignes maximum, avec au moins un temps du passé et un temps du futur. Le format long — réflexion argumentée ou récit développé — reste accessible dans la même page, utile en début d'année et pour les devoirs de classe.</p>
