@@ -62,6 +62,11 @@ button{font-family:var(--sans);font-size:.9rem;cursor:pointer;border-radius:0}
 .btn-vert:hover{background:#245A43}
 .btn-fin{background:transparent;color:var(--s2);border:1px solid var(--voile);padding:7px 13px}
 .btn-fin:hover{border-color:var(--s2)}
+.btn-son{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--s2);border:1px solid var(--voile);padding:6px 11px;font-size:.82rem}
+.btn-son:hover{border-color:var(--s2)}
+.btn-son[aria-pressed="true"]{background:var(--s2);color:var(--blanc);border-color:var(--s2)}
+.btn-son svg{width:13px;height:13px;flex:none;fill:currentColor}
+.ligne-son{margin-top:13px}
 
 .choix-theme{display:flex;gap:10px;align-items:center;margin:0 0 14px;flex-wrap:wrap}
 .choix-theme label{font-family:var(--serif);font-size:1rem;color:var(--s2)}
@@ -213,6 +218,11 @@ textarea:focus{border-color:var(--s3)}
         <label>Maximum de mots — cinq lignes <input type="number" id="max2" value="70" min="30" max="150" step="5"></label>
         <label>Minimum de mots — format long <input type="number" id="min2" value="80" min="20" max="300" step="5"></label>
         <label>Durée du chronomètre (min) <input type="number" id="duree" value="25" min="5" max="120" step="5"></label>
+        <label>Voix — vitesse de lecture <select id="vitesse">
+          <option value="0.7">Lente</option>
+          <option value="0.85" selected>Moyenne</option>
+          <option value="1">Normale</option>
+        </select></label>
       </details>
     </div>
   </header>
@@ -241,6 +251,7 @@ textarea:focus{border-color:var(--s3)}
           <div class="pastilles" id="pastilles"></div>
           <input class="champ-mots" id="champMots" aria-label="Modifier les mots imposés"
                  placeholder="Remplacer par les mots de ton sujet, séparés par des virgules">
+          <div class="ligne-son"><button class="btn-son" id="direMots" aria-pressed="false" data-libelle="Écouter les mots" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-1 7-4.5 7-8.8s-3-7.8-7-8.8z"/></svg><span class="son-txt">Écouter les mots</span></button></div>
         </div>
 
         <h2 class="titre-bloc" style="margin-top:28px">Les quatre choses à dire</h2>
@@ -250,6 +261,7 @@ textarea:focus{border-color:var(--s3)}
         <details class="boite" id="boiteEx1">
           <summary>Voir un exemple rédigé</summary>
           <div id="ex1" style="margin-top:14px"></div>
+          <div class="ligne-son"><button class="btn-son" id="direEx1" aria-pressed="false" data-libelle="Écouter l'exemple" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-1 7-4.5 7-8.8s-3-7.8-7-8.8z"/></svg><span class="son-txt">Écouter l'exemple</span></button></div>
         </details>
         <details class="boite">
           <summary>Mots et expressions utiles</summary>
@@ -269,6 +281,7 @@ textarea:focus{border-color:var(--s3)}
         <div class="actions">
           <button class="btn" id="verifier1">Vérifier ma copie</button>
           <button class="btn btn-vert" data-copie="1">Copier ma copie</button>
+<button class="btn-son" id="direTexte1" aria-pressed="false" data-libelle="Écouter mon texte" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-1 7-4.5 7-8.8s-3-7.8-7-8.8z"/></svg><span class="son-txt">Écouter mon texte</span></button>
           <button class="btn-fin" data-telecharge="1">Télécharger</button>
           <button class="btn-fin" data-efface="1">Effacer</button>
         </div>
@@ -302,7 +315,7 @@ textarea:focus{border-color:var(--s3)}
           <p id="questionTexte"></p>
           <div class="barre">
             <span class="mini" id="questionLien"></span>
-            <button class="btn-fin" id="autreQuestion">Autre sujet</button>
+            <span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-son" id="direSujet" aria-pressed="false" data-libelle="Écouter la consigne" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-1 7-4.5 7-8.8s-3-7.8-7-8.8z"/></svg><span class="son-txt">Écouter la consigne</span></button><button class="btn-fin" id="autreQuestion">Autre sujet</button></span>
           </div>
         </div>
         <p class="mini" id="noteSujet" style="margin:9px 0 0"></p>
@@ -316,6 +329,7 @@ textarea:focus{border-color:var(--s3)}
         <details class="boite" id="boiteEx2">
           <summary>Voir un exemple rédigé</summary>
           <div id="ex2" style="margin-top:14px"></div>
+          <div class="ligne-son"><button class="btn-son" id="direEx2" aria-pressed="false" data-libelle="Écouter l'exemple" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-1 7-4.5 7-8.8s-3-7.8-7-8.8z"/></svg><span class="son-txt">Écouter l'exemple</span></button></div>
         </details>
         <details class="boite">
           <summary>Mots et expressions utiles</summary>
@@ -335,6 +349,7 @@ textarea:focus{border-color:var(--s3)}
         <div class="actions">
           <button class="btn" id="verifier2">Vérifier ma copie</button>
           <button class="btn btn-vert" data-copie="2">Copier ma copie</button>
+<button class="btn-son" id="direTexte2" aria-pressed="false" data-libelle="Écouter mon texte" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.8-1-3.3-2.5-4v8c1.5-.7 2.5-2.2 2.5-4zM14 3.2v2.1c2.9.9 5 3.5 5 6.7s-2.1 5.8-5 6.7v2.1c4-1 7-4.5 7-8.8s-3-7.8-7-8.8z"/></svg><span class="son-txt">Écouter mon texte</span></button>
           <button class="btn-fin" data-telecharge="2">Télécharger</button>
           <button class="btn-fin" data-efface="2">Effacer</button>
         </div>
@@ -360,6 +375,9 @@ textarea:focus{border-color:var(--s3)}
 
         <h4>Les deux formats du second travail</h4>
         <p>Le format court applique les nouvelles consignes : deux sujets au choix, tous les deux tirés de la photo, cinq lignes maximum, avec au moins un temps du passé et un temps du futur. Le format long — réflexion argumentée ou récit développé — reste accessible dans la même page, utile en début d'année et pour les devoirs de classe.</p>
+
+        <h4>Écouter</h4>
+        <p>Les boutons « Écouter » lisent à voix haute la consigne, l'exemple rédigé, les mots imposés et le texte de l'élève, avec la voix française installée sur l'appareil. Rien n'est envoyé sur Internet. Se relire à voix haute est l'un des meilleurs moyens de repérer une phrase mal construite : l'élève entend ce que son texte dit vraiment, et non ce qu'il croyait écrire. La vitesse se règle dans les réglages, en haut de la page. Si l'appareil ne possède aucune voix française, les boutons ne s'affichent pas.</p>
 
         <h4>Les exemples</h4>
         <p>Chaque photo et chaque sujet ont un exemple rédigé. Les phrases y sont soulignées dans la couleur de l'élément auquel elles répondent, et les mots imposés apparaissent en surbrillance. Écris d'abord ton texte, puis compare : c'est là que tu verras ce qui manque chez toi.</p>
@@ -2302,6 +2320,7 @@ function afficherQuestion(){
 const BTN_Q = { apres:'btnApres', secret:'btnSecret', reflexion:'btnReflexion', creativite:'btnCreativite' };
 Object.keys(BTN_Q).forEach(k=>{ $(BTN_Q[k]).onclick = ()=> changerType(k); });
 function changerType(t){
+  if(typeof stopSon === 'function') stopSon();
   typeQ = t;
   Object.keys(BTN_Q).forEach(k=> $(BTN_Q[k]).setAttribute('aria-pressed', String(k===t)));
   const c = estCourt();
@@ -2327,7 +2346,8 @@ $('autreQuestion').onclick = ()=>{
   allerAuTheme(autres[Math.floor(Math.random()*autres.length)].n);
 };
 $('champQuestion').addEventListener('input', e=>{ questionPerso = e.target.value; afficherQuestion(); rendreEx2(); });
-function majSujet(){ afficherPhoto(); construireMethode1(); majPastilles(); afficherQuestion(); rendreEx1(); rendreEx2(); }
+function majSujet(){
+  if(typeof stopSon === 'function') stopSon(); afficherPhoto(); construireMethode1(); majPastilles(); afficherQuestion(); rendreEx1(); rendreEx2(); }
 
 /* ============ 10. COMPTEUR ============ */
 function compterCourt(){
@@ -2472,7 +2492,7 @@ $('verifier1').onclick = ()=>verifier(1);
 $('verifier2').onclick = ()=>verifier(2);
 
 /* ============ 12. RÉGLAGES, CHRONO, ONGLETS, OUTILS ============ */
-function enrRegl(){ ecrire(CLE_REGL, {min1:min1,min2:min2,max2:max2,duree:duree}); }
+function enrRegl(){ ecrire(CLE_REGL, {min1:min1,min2:min2,max2:max2,duree:duree,vitesse:vitesse}); }
 $('max2').addEventListener('input', e=>{ max2 = +e.target.value||70; compter(2); enrRegl(); });
 $('min1').addEventListener('input', e=>{ min1 = +e.target.value||80; compter(1); enrRegl(); });
 $('min2').addEventListener('input', e=>{ min2 = +e.target.value||80; compter(2); enrRegl(); });
@@ -2493,6 +2513,7 @@ $('chronoBtn').onclick = function(){
 };
 $('chronoRaz').onclick = razChrono;
 function ouvrir(n){
+  if(typeof stopSon === 'function') stopSon();
   $('tab1').setAttribute('aria-selected', String(n===1));
   $('tab2').setAttribute('aria-selected', String(n===2));
   $('partie1').hidden = n!==1; $('partie2').hidden = n!==2;
@@ -2561,6 +2582,80 @@ function montrerHistorique(h){
     '<tr><td>'+dateFr(l.d)+'</td><td>'+esc(l.t)+'</td><td>'+esc(l.s)+'</td><td>'+l.m+'</td><td>'+l.v+'/'+l.v+'</td></tr>').join('');
 }
 
+/* ============ 8 bis. LECTURE À VOIX HAUTE ============ */
+/* Utilise la synthèse vocale du navigateur : aucune donnée ne sort de l'appareil.
+   Les boutons restent cachés tant qu'aucune voix française n'est disponible. */
+const SON = { dispo: typeof speechSynthesis !== 'undefined', voix: null, btn: null, tic: null };
+let vitesse = 0.85;
+
+function boutonsSon(){ return Array.from(document.querySelectorAll('.btn-son')); }
+function choisirVoix(){
+  if(!SON.dispo) return;
+  let v = [];
+  try { v = speechSynthesis.getVoices().filter(x => /^fr\b|^fr[-_]/i.test(x.lang || '')); } catch(e){ v = []; }
+  SON.voix = v.find(x => /^fr[-_]fr/i.test(x.lang)) || v[0] || null;
+  boutonsSon().forEach(b => { b.hidden = !SON.voix; });
+}
+function libelleSon(b, enCours){
+  const t = b.querySelector('.son-txt');
+  if(t) t.textContent = enCours ? 'Arrêter' : b.dataset.libelle;
+}
+function stopSon(){
+  if(!SON.dispo) return;
+  try { speechSynthesis.cancel(); } catch(e){}
+  if(SON.tic){ clearInterval(SON.tic); SON.tic = null; }
+  if(SON.btn){ SON.btn.setAttribute('aria-pressed','false'); libelleSon(SON.btn, false); SON.btn = null; }
+}
+function morceauxSon(t){
+  const phrases = t.replace(/\s+/g,' ').trim().match(/[^.!?…]+[.!?…]*\s*/g) || [t];
+  const out = []; let cur = '';
+  phrases.forEach(p => {
+    if((cur + p).length > 170 && cur){ out.push(cur.trim()); cur = p; } else cur += p;
+  });
+  if(cur.trim()) out.push(cur.trim());
+  return out.filter(x => x);
+}
+function dire(texte, bouton){
+  if(!SON.dispo || !SON.voix) return;
+  const memeBouton = SON.btn === bouton;
+  stopSon();
+  if(memeBouton) return;
+  const t = (texte || '').trim();
+  if(!t) return;
+  SON.btn = bouton; bouton.setAttribute('aria-pressed','true'); libelleSon(bouton, true);
+  const parts = morceauxSon(t);
+  parts.forEach((p, i) => {
+    const u = new SpeechSynthesisUtterance(p);
+    u.voice = SON.voix; u.lang = SON.voix.lang; u.rate = vitesse; u.pitch = 1;
+    if(i === parts.length - 1) u.onend = stopSon;
+    u.onerror = stopSon;
+    speechSynthesis.speak(u);
+  });
+  /* Chrome coupe la lecture au bout d'une quinzaine de secondes sans ce rappel. */
+  SON.tic = setInterval(() => {
+    if(!speechSynthesis.speaking){ return; }
+    if(!speechSynthesis.paused){ speechSynthesis.pause(); speechSynthesis.resume(); }
+  }, 9000);
+}
+function texteExemple(id){
+  const p = $(id).querySelector('.exemple');
+  return p ? p.textContent : '';
+}
+if(SON.dispo){
+  choisirVoix();
+  speechSynthesis.addEventListener('voiceschanged', choisirVoix);
+  window.addEventListener('beforeunload', stopSon);
+  $('direMots').onclick    = e => dire(motsImposes.join(', '), e.currentTarget);
+  $('direEx1').onclick     = e => dire(texteExemple('ex1'), e.currentTarget);
+  $('direEx2').onclick     = e => dire(texteExemple('ex2'), e.currentTarget);
+  $('direSujet').onclick   = e => dire(questionActuelle(), e.currentTarget);
+  $('direTexte1').onclick  = e => dire($('texte1').value, e.currentTarget);
+  $('direTexte2').onclick  = e => dire($('texte2').value, e.currentTarget);
+  $('vitesse').addEventListener('change', e => { vitesse = +e.target.value || 0.85; stopSon(); enrRegl(); });
+} else {
+  boutonsSon().forEach(b => { b.hidden = true; });
+}
+
 /* ============ 14. DÉMARRAGE ============ */
 construireSelecteur();
 construirePellicule();
@@ -2568,8 +2663,9 @@ construireMethode1();
 construireMethode2();
 majSujet();
 const r = lire(CLE_REGL);
-if(r){ min1 = r.min1||80; min2 = r.min2||80; max2 = r.max2||70; duree = r.duree||25;
-       $('min1').value = min1; $('min2').value = min2; $('max2').value = max2; $('duree').value = duree; }
+if(r){ min1 = r.min1||80; min2 = r.min2||80; max2 = r.max2||70; duree = r.duree||25; vitesse = r.vitesse||0.85;
+       $('min1').value = min1; $('min2').value = min2; $('max2').value = max2; $('duree').value = duree;
+       if($('vitesse')) $('vitesse').value = String(vitesse); }
 reste = duree*60;
 changerType(typeQ);
 compter(1); compter(2); majChrono();
